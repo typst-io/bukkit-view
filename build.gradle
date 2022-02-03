@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'kr.entree.spigradle.base' version '2.3.4'
+}
+
+group 'io.typecraft'
+version '0.1.0'
+
+repositories {
+    mavenCentral()
+    spigotmc()
+}
+
+dependencies {
+    compileOnly spigot('1.18')
+    compileOnly lombok()
+    annotationProcessor lombok()
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
+
+test {
+    useJUnitPlatform()
+}
