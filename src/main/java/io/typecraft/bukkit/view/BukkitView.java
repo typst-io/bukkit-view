@@ -41,6 +41,8 @@ public class BukkitView {
                     if (action instanceof ViewAction.Open) {
                         ViewAction.Open open = (ViewAction.Open) action;
                         Bukkit.getScheduler().runTask(plugin, () -> openView(open.getView(), p));
+                    } else if (action instanceof ViewAction.Close) {
+                        Bukkit.getScheduler().runTask(plugin, p::closeInventory);
                     }
                 }
                 e.setCancelled(true);

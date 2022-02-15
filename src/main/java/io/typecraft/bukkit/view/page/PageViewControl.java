@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+// TODO: rename to `PageViewItem`
 @Data
 public class PageViewControl {
     private final ItemStack item;

@@ -21,6 +21,7 @@ import java.util.stream.IntStream;
 public class PageViewLayout {
     private final String title;
     private final int row;
+    // TODO: List<Function<PageContext, PageViewItem>>
     private final List<Supplier<ViewItem>> contents;
     private final List<Integer> slots;
     private final Map<Integer, Function<PageContext, PageViewControl>> controls;
