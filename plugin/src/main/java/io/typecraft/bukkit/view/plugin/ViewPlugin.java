@@ -11,6 +11,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,6 +38,11 @@ public class ViewPlugin extends JavaPlugin {
         List<Supplier<ViewItem>> pagingContents = Bukkit.getOnlinePlayers().stream()
                 .map(p -> (Supplier<ViewItem>) () -> {
                     ItemStack headItem = new ItemStack(Material.PLAYER_HEAD);
+                    SkullMeta meta = (SkullMeta) headItem.getItemMeta();
+                    if (meta != null) {
+                        meta.setOwningPlayer(p);
+                        headItem.setItemMeta(meta);
+                    }
                     return new ViewItem(headItem, e -> {
                         Player clicker = e.getPlayer();
                         if (!p.isOnline()) {
