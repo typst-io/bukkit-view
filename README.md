@@ -6,6 +6,8 @@ There's no any side effect except `BukkitView.class`, all functions just pure, t
 
 Also, this library is a good showcase how to do declarative programming in Java.
 
+[Example is here!](https://github.com/typecraft-io/bukkit-view/blob/main/plugin/src/main/java/io/typecraft/bukkit/view/plugin/ViewPlugin.java)
+
 ## Initialize
 
 ```java
