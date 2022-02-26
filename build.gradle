@@ -32,6 +32,8 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(8)
     }
+    withSourcesJar()
+    withJavadocJar()
 }
 
 test {
