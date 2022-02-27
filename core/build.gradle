@@ -1,11 +1,11 @@
 plugins {
     id 'java'
-    id 'kr.entree.spigradle' version '2.3.4'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'maven-publish'
+    id 'kr.entree.spigradle.base' version '2.3.4'
 }
 
 group 'io.typecraft'
-version '0.2.0'
+version '1.0.0'
 
 repositories {
     mavenCentral()
@@ -13,7 +13,6 @@ repositories {
 }
 
 dependencies {
-    shadow project(':bukkit-view-core')
     compileOnly spigot('1.18')
     compileOnly lombok()
     annotationProcessor lombok()
@@ -21,26 +20,20 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
-spigot {
-    name = 'BukkitView'
-    commands {
-        create ('bukkitview') {
-            aliases = ['view']
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
         }
     }
-    apiVersion '1.18'
 }
-
-shadowJar {
-    configurations = [project.configurations.shadow]
-}
-
-assemble.dependsOn(shadowJar)
 
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(8)
     }
+    withSourcesJar()
+    withJavadocJar()
 }
 
 test {

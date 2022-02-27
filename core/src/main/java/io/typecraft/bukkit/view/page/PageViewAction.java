@@ -4,10 +4,11 @@ import io.typecraft.bukkit.view.ViewAction;
 import lombok.Data;
 
 public interface PageViewAction {
-    PageViewAction NOTHING = new Action(ViewAction.NOTHING);
+    PageViewAction NOTHING = new Prime(ViewAction.NOTHING);
+    PageViewAction CLOSE = new Prime(ViewAction.CLOSE);
 
     @Data
-    class Action implements PageViewAction {
+    class Prime implements PageViewAction {
         private final ViewAction action;
     }
 

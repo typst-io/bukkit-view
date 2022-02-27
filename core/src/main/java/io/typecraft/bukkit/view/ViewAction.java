@@ -13,7 +13,7 @@ public interface ViewAction {
 
     @Data
     class Open implements ViewAction {
-        private final View view;
+        private final ChestView view;
     }
 
     @Data

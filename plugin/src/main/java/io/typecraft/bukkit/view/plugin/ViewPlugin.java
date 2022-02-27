@@ -3,6 +3,7 @@ package io.typecraft.bukkit.view.plugin;
 import io.typecraft.bukkit.view.BukkitView;
 import io.typecraft.bukkit.view.ViewAction;
 import io.typecraft.bukkit.view.ViewItem;
+import io.typecraft.bukkit.view.page.PageContext;
 import io.typecraft.bukkit.view.page.PageViewLayout;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,7 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.function.Supplier;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ViewPlugin extends JavaPlugin {
@@ -35,8 +36,8 @@ public class ViewPlugin extends JavaPlugin {
     }
 
     public static PageViewLayout createMyViewLayout(String title) {
-        List<Supplier<ViewItem>> pagingContents = Bukkit.getOnlinePlayers().stream()
-                .map(p -> (Supplier<ViewItem>) () -> {
+        List<Function<PageContext, ViewItem>> pagingContents = Bukkit.getOnlinePlayers().stream()
+                .map(p -> (Function<PageContext, ViewItem>) ctx -> {
                     ItemStack headItem = new ItemStack(Material.PLAYER_HEAD);
                     SkullMeta meta = (SkullMeta) headItem.getItemMeta();
                     if (meta != null) {
@@ -44,7 +45,7 @@ public class ViewPlugin extends JavaPlugin {
                         headItem.setItemMeta(meta);
                     }
                     return new ViewItem(headItem, e -> {
-                        Player clicker = e.getPlayer();
+                        Player clicker = e.getClicker();
                         if (!p.isOnline()) {
                             clicker.sendMessage(ChatColor.RED + "Player '" + p.getName() + "' not in online!");
                         } else if (clicker.isOp()) {

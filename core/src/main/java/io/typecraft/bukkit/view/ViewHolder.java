@@ -4,7 +4,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
 public class ViewHolder implements InventoryHolder {
-    private View view;
+    private ChestView view;
     private Inventory inventory;
 
     @Override
@@ -16,11 +16,11 @@ public class ViewHolder implements InventoryHolder {
         this.inventory = inventory;
     }
 
-    public View getView() {
+    public ChestView getView() {
         return view;
     }
 
-    public void setView(View view) {
+    public void setView(ChestView view) {
         this.view = view;
     }
 }

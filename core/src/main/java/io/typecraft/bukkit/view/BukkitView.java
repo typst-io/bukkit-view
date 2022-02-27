@@ -13,7 +13,7 @@ import org.bukkit.plugin.Plugin;
 import java.util.Map;
 
 public class BukkitView {
-    public static void openView(View view, Player player) {
+    public static void openView(ChestView view, Player player) {
         ViewHolder holder = new ViewHolder();
         holder.setView(view);
         Inventory inv = Bukkit.createInventory(holder, view.getRow() * 9, view.getTitle());
@@ -30,14 +30,14 @@ public class BukkitView {
             public void onClick(InventoryClickEvent e) {
                 Inventory topInv = e.getView().getTopInventory();
                 ViewHolder holder = topInv.getHolder() instanceof ViewHolder ? ((ViewHolder) topInv.getHolder()) : null;
-                View view = holder != null ? holder.getView() : null;
+                ChestView view = holder != null ? holder.getView() : null;
                 if (holder == null || view == null) {
                     return;
                 }
                 Player p = (Player) e.getWhoClicked();
                 ViewItem viewItem = view.getItems().get(e.getRawSlot());
                 if (viewItem != null) {
-                    ViewAction action = viewItem.getOnClick().apply(new ClickEvent(p));
+                    ViewAction action = viewItem.getOnClick().apply(new ClickEvent(p, e.getClick(), e.getAction(), e.getHotbarButton()));
                     if (action instanceof ViewAction.Open) {
                         ViewAction.Open open = (ViewAction.Open) action;
                         Bukkit.getScheduler().runTask(plugin, () -> openView(open.getView(), p));
@@ -55,7 +55,7 @@ public class BukkitView {
                 if (holder == null) {
                     return;
                 }
-                View view = holder.getView();
+                ChestView view = holder.getView();
                 if (e.getRawSlots().stream()
                         .anyMatch(a -> view.getItems().get(a) != null)) {
                     e.setCancelled(true);
