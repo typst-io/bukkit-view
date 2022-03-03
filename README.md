@@ -2,7 +2,7 @@
 
 A [pure](https://en.wikipedia.org/wiki/Purely_functional_programming) library to express minecraft chest view.
 
-There's no any side effect except `BukkitView.class`, all functions just pure, therefore this can be run in multithreads -- even Bukkit part can't -- and easy to write unit tests.
+There is no side effect except `BukkitView.class`, all functions just pure, therefore this can be run in multithreads -- even Bukkit part can't -- and easy to write unit tests.
 
 Also, this library is a good showcase how to do declarative programming in Java.
 
@@ -19,10 +19,10 @@ public class MyPlugin extends JavaPlugin {
 }
 ```
 
-## View
+## ChestView
 
 ```java
-View subView = ...;
+ChestView subView = ...;
 
 Map<Integer, ViewItem> map = new HashMap<>();
 String title = "title";
@@ -35,7 +35,7 @@ map.put(3, new ViewItem(
             return new ViewAction.Open(subView);
         }
 ));
-View view = new View(title, row, map);
+ChestView view = new ChestView(title, row, map);
 BukkitView.openView(view, player);
 ```
 
@@ -72,7 +72,7 @@ Evaluate a single page from the layout and open:
 
 ```java
 int page = 1;
-View view = layout.toView(page);
+ChestView view = layout.toView(page);
 BukkitView.openView(view, player);
 ```
 
