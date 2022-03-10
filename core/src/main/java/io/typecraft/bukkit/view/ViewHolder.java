@@ -2,10 +2,16 @@ package io.typecraft.bukkit.view;
 
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.plugin.Plugin;
 
 public class ViewHolder implements InventoryHolder {
+    private final Plugin plugin;
     private ChestView view;
     private Inventory inventory;
+
+    public ViewHolder(Plugin plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public Inventory getInventory() {
@@ -22,5 +28,9 @@ public class ViewHolder implements InventoryHolder {
 
     public void setView(ChestView view) {
         this.view = view;
+    }
+
+    public Plugin getPlugin() {
+        return plugin;
     }
 }

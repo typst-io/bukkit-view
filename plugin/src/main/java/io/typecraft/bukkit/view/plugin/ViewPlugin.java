@@ -30,7 +30,7 @@ public class ViewPlugin extends JavaPlugin {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         Player p = sender instanceof Player ? ((Player) sender) : null;
         if (p != null && p.isOp()) {
-            BukkitView.openView(createMyViewLayout(p.getName()).toView(1), p);
+            BukkitView.openView(createMyViewLayout(p.getName()).toView(1), p, this);
         }
         return true;
     }

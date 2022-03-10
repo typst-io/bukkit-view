@@ -3,7 +3,6 @@ package io.typecraft.bukkit.view;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -15,14 +14,11 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 
 public class BukkitView {
-    private static final AtomicReference<Listener> listenerRef = new AtomicReference<>();
-
-    public static void openView(ChestView view, Player player) {
-        ViewHolder holder = new ViewHolder();
+    public static void openView(ChestView view, Player player, Plugin plugin) {
+        ViewHolder holder = new ViewHolder(plugin);
         holder.setView(view);
         Inventory inv = Bukkit.createInventory(holder, view.getRow() * 9, view.getTitle());
         holder.setInventory(inv);
@@ -33,13 +29,11 @@ public class BukkitView {
     }
 
     public static Listener viewListener(Plugin plugin) {
-        return listenerRef.updateAndGet(prevListener -> prevListener != null ? prevListener : new BukkitViewListener(plugin));
+        return new BukkitViewListener(plugin);
     }
 
     public static void register(Plugin plugin) {
-        Listener listener = viewListener(plugin);
-        HandlerList.unregisterAll(listener);
-        Bukkit.getPluginManager().registerEvents(listener, plugin);
+        Bukkit.getPluginManager().registerEvents(viewListener(plugin), plugin);
     }
 
     private static class BukkitViewListener implements Listener {
@@ -54,7 +48,7 @@ public class BukkitView {
             Inventory topInv = e.getView().getTopInventory();
             ViewHolder holder = topInv.getHolder() instanceof ViewHolder ? ((ViewHolder) topInv.getHolder()) : null;
             ChestView view = holder != null ? holder.getView() : null;
-            if (holder == null || view == null) {
+            if (holder == null || view == null || !holder.getPlugin().getName().equals(plugin.getName())) {
                 return;
             }
             Player p = (Player) e.getWhoClicked();
@@ -63,7 +57,7 @@ public class BukkitView {
                 ViewAction action = viewItem.getOnClick().apply(new ClickEvent(p, e.getClick(), e.getAction(), e.getHotbarButton()));
                 if (action instanceof ViewAction.Open) {
                     ViewAction.Open open = (ViewAction.Open) action;
-                    Bukkit.getScheduler().runTask(plugin, () -> openView(open.getView(), p));
+                    Bukkit.getScheduler().runTask(plugin, () -> openView(open.getView(), p, plugin));
                 } else if (action instanceof ViewAction.Close) {
                     Bukkit.getScheduler().runTask(plugin, p::closeInventory);
                 } else if (action instanceof ViewAction.OpenAsync) {
@@ -71,9 +65,9 @@ public class BukkitView {
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
                         try {
                             ChestView chestView = openAsync.getViewFuture().get(30, TimeUnit.SECONDS);
-                            Bukkit.getScheduler().runTask(plugin, () -> openView(chestView, p));
+                            Bukkit.getScheduler().runTask(plugin, () -> openView(chestView, p, plugin));
                         } catch (InterruptedException | ExecutionException | TimeoutException ex) {
-                            Bukkit.getLogger().log(Level.WARNING, ex, () -> "[BukkitView] Error while waiting to get a chest view.");
+                            plugin.getLogger().log(Level.WARNING, ex, () -> "Error while waiting to get a chest view.");
                         }
                     });
                 }

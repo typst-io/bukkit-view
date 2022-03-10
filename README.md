@@ -36,7 +36,7 @@ map.put(3, new ViewItem(
         }
 ));
 ChestView view = new ChestView(title, row, map);
-BukkitView.openView(view, player);
+BukkitView.openView(view, player, plugin);
 ```
 
 To create asynchronously:
@@ -84,7 +84,7 @@ Evaluate a single page from the layout and open:
 ```java
 int page = 1;
 ChestView view = layout.toView(page);
-BukkitView.openView(view, player);
+BukkitView.openView(view, player, plugin);
 ```
 
 ## ViewItem
