@@ -14,7 +14,7 @@ Also, this library is a good showcase how to do declarative programming in Java.
 public class MyPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(BukkitView.viewListener(this), this);
+        BukkitView.register(this);
     }
 }
 ```

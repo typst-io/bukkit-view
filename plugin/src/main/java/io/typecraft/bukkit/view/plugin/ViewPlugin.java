@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class ViewPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
-        Bukkit.getPluginManager().registerEvents(BukkitView.viewListener(this), this);
+        BukkitView.register(this);
     }
 
     @Override
