@@ -39,11 +39,12 @@ ChestView view = new ChestView(title, row, map);
 BukkitView.openView(view, player);
 ```
 
-To create a view asynchronously:
+To create asynchronously:
 ```java
 new ViewItem(
         bukkitItemStack,
         e -> {
+            Future<ChestView> myChestViewFuture;
             return new ViewAction.OpenAsync(myChestViewFuture);
         }
 )
@@ -54,8 +55,8 @@ new ViewItem(
 Default construction `ofDefault()` for `PageViewLayout`:
 
 ```java
-// Lazy `Supplier<ViewItem>` not just `ViewItem`
-List<Supplier<ViewItem>> items = ...;
+// Lazy `Function<PageContext, ViewItem>` not just `ViewItem`
+List<Function<PageContext, ViewItem>> items = ...;
 PageViewLayout layout = PageViewLayout.ofDefault(
         "title", 
         6, 
@@ -68,7 +69,7 @@ Full construction for `PageViewLayout`:
 
 ```java
 // Paging elements
-List<Supplier<ViewItem>> items = ...;
+List<Function<PageContext, ViewItem>> items = ...;
 // Paging elements will be put in this slots.
 List<Integer> slots = ...;
 // Control means fixed view-item, won't affected by view paging.
