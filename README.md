@@ -39,6 +39,16 @@ ChestView view = new ChestView(title, row, map);
 BukkitView.openView(view, player);
 ```
 
+To create a view asynchronously:
+```java
+new ViewItem(
+        bukkitItemStack,
+        e -> {
+            return new ViewAction.OpenAsync(myChestViewFuture);
+        }
+)
+```
+
 ## PageView
 
 Default construction `ofDefault()` for `PageViewLayout`:

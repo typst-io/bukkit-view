@@ -11,6 +11,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.Plugin;
 
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.logging.Level;
 
 public class BukkitView {
     public static void openView(ChestView view, Player player) {
@@ -43,6 +47,16 @@ public class BukkitView {
                         Bukkit.getScheduler().runTask(plugin, () -> openView(open.getView(), p));
                     } else if (action instanceof ViewAction.Close) {
                         Bukkit.getScheduler().runTask(plugin, p::closeInventory);
+                    } else if (action instanceof ViewAction.OpenAsync) {
+                        ViewAction.OpenAsync openAsync = ((ViewAction.OpenAsync) action);
+                        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                            try {
+                                ChestView chestView = openAsync.getViewFuture().get(30, TimeUnit.SECONDS);
+                                Bukkit.getScheduler().runTask(plugin, () -> openView(chestView, p));
+                            } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+                                plugin.getLogger().log(Level.WARNING, ex, () -> "Error while waiting to get a chest view.");
+                            }
+                        });
                     }
                 }
                 e.setCancelled(true);
