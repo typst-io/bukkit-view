@@ -39,7 +39,7 @@ ChestView view = new ChestView(title, row, map);
 BukkitView.openView(view, player, plugin);
 ```
 
-To create asynchronously:
+To open asynchronously:
 ```java
 new ViewItem(
         bukkitItemStack,
