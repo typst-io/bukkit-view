@@ -4,6 +4,7 @@ import io.typecraft.bukkit.view.ChestView;
 import io.typecraft.bukkit.view.ViewAction;
 import io.typecraft.bukkit.view.ViewItem;
 import lombok.Data;
+import lombok.With;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 @Data
+@With
 public class PageViewLayout {
     private final String title;
     private final int row;

@@ -4,12 +4,14 @@ import io.typecraft.bukkit.view.ClickEvent;
 import io.typecraft.bukkit.view.ViewAction;
 import io.typecraft.bukkit.view.ViewItem;
 import lombok.Data;
+import lombok.With;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 @Data
+@With
 public class PageViewControl {
     private final ItemStack item;
     private final Function<ClickEvent, PageViewAction> onClick;

@@ -1,6 +1,7 @@
 package io.typecraft.bukkit.view;
 
 import lombok.Data;
+import lombok.With;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.function.Consumer;
@@ -8,6 +9,7 @@ import java.util.function.Function;
 
 
 @Data
+@With
 public class ViewItem {
     private final ItemStack item;
     private final Function<ClickEvent, ViewAction> onClick;
