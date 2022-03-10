@@ -47,10 +47,10 @@ public class BukkitView {
         public void onClick(InventoryClickEvent e) {
             Inventory topInv = e.getView().getTopInventory();
             ViewHolder holder = topInv.getHolder() instanceof ViewHolder ? ((ViewHolder) topInv.getHolder()) : null;
-            ChestView view = holder != null ? holder.getView() : null;
-            if (holder == null || view == null || !holder.getPlugin().getName().equals(plugin.getName())) {
+            if (holder == null || !holder.getPlugin().getName().equals(plugin.getName())) {
                 return;
             }
+            ChestView view = holder.getView();
             Player p = (Player) e.getWhoClicked();
             ViewItem viewItem = view.getItems().get(e.getRawSlot());
             if (viewItem != null) {
@@ -79,7 +79,7 @@ public class BukkitView {
         public void onDrag(InventoryDragEvent e) {
             Inventory topInv = e.getView().getTopInventory();
             ViewHolder holder = topInv.getHolder() instanceof ViewHolder ? ((ViewHolder) topInv.getHolder()) : null;
-            if (holder == null) {
+            if (holder == null || !holder.getPlugin().getName().equals(plugin.getName())) {
                 return;
             }
             ChestView view = holder.getView();
