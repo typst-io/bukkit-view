@@ -54,7 +54,12 @@ public class BukkitView {
             Player p = (Player) e.getWhoClicked();
             ViewItem viewItem = view.getItems().get(e.getRawSlot());
             if (viewItem != null) {
-                ViewAction action = viewItem.getOnClick().apply(new ClickEvent(p, e.getClick(), e.getAction(), e.getHotbarButton()));
+                ViewAction action = ViewAction.NOTHING;
+                try {
+                    action = viewItem.getOnClick().apply(new ClickEvent(p, e.getClick(), e.getAction(), e.getHotbarButton()));
+                } catch (Exception ex) {
+                    plugin.getLogger().log(Level.WARNING, ex, () -> "Error on InventoryClick!");
+                }
                 if (action instanceof ViewAction.Open) {
                     ViewAction.Open open = (ViewAction.Open) action;
                     Bukkit.getScheduler().runTask(plugin, () -> openView(open.getView(), p, plugin));
