@@ -70,6 +70,10 @@ publishing {
     }
 }
 
+signing {
+    sign(publishing.publications["bukkitView"])
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(8)
