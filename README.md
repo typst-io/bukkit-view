@@ -8,6 +8,33 @@ Also, this library is a good showcase how to do declarative programming in Java.
 
 [Example is here!](https://github.com/typecraft-io/bukkit-view/blob/main/plugin/src/main/java/io/typecraft/bukkit/view/plugin/ViewPlugin.java)
 
+## Import
+
+### Gradle
+
+```groovy
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly("io.typecraft:bukkit-view-core:2.0.2")
+}
+```
+
+### Maven
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>io.typecraft</groupId>
+        <artifactId>bukkit-view-core</artifactId>
+        <version>2.0.2</version>
+        <scope>provided</scope>
+    </dependency>
+</dependencies>
+```
+
 ## Initialize
 
 ```java
