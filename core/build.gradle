@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'maven-publish'
+    id 'signing'
     id 'kr.entree.spigradle.base' version '2.3.4'
 }
 
@@ -22,8 +23,49 @@ dependencies {
 
 publishing {
     publications {
-        maven(MavenPublication) {
+        bukkitView(MavenPublication) {
             from components.java
+            pom {
+                name.set("${project.group}:${project.name}")
+                description.set("Pure view library for Minecraft.")
+                url.set("https://github.com/typecraft-io/bukkit-view")
+                licenses {
+                    license {
+                        name.set("The GNU General Public License, Version 3.0")
+                        url.set("https://www.gnu.org/licenses/gpl-3.0.txt")
+                    }
+                }
+                developers {
+                    developer {
+                        id.set("entrypointkr")
+                        name.set("Junhyung Im")
+                        email.set("entrypointkr@gmail.com")
+                    }
+                }
+                scm {
+                    connection.set("scm:git:git://github.com/typecraft-io/bukkit-view.git")
+                    developerConnection.set("scm:git:ssh://github.com:typecraft-io/bukkit-view.git")
+                    url.set("https://github.com/typecraft-io/bukkit-view/tree/master")
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            name = "sonatypeReleases"
+            url = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+            credentials {
+                username = findProperty("ossrhUsername")?.toString()
+                password = findProperty("ossrhPassword")?.toString()
+            }
+        }
+        maven {
+            name = "sonatypeSnapshots"
+            url = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+            credentials {
+                username = findProperty("ossrhUsername")?.toString()
+                password = findProperty("ossrhPassword")?.toString()
+            }
         }
     }
 }
