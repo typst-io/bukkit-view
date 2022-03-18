@@ -7,6 +7,7 @@ import java.util.concurrent.Future;
 public interface ViewAction {
     Nothing NOTHING = new Nothing();
     Close CLOSE = new Close();
+    Cancel CANCEL = new Cancel();
 
     class Nothing implements ViewAction {
         private Nothing() {
@@ -16,6 +17,12 @@ public interface ViewAction {
     @Data
     class Open implements ViewAction {
         private final ChestView view;
+    }
+
+    @Data
+    class Cancel implements ViewAction {
+        private Cancel() {
+        }
     }
 
     @Data
