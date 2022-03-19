@@ -110,7 +110,9 @@ public class BukkitView {
                 } catch (Exception ex) {
                     plugin.getLogger().log(Level.WARNING, ex, () -> "Error on InventoryClose!");
                 }
-                if (action instanceof ViewAction.Open) {
+                if (action instanceof ViewAction.Cancel) {
+                    Bukkit.getScheduler().runTask(plugin, () -> openView(view, p, plugin));
+                } else if (action instanceof ViewAction.Open) {
                     ViewAction.Open open = (ViewAction.Open) action;
                     Bukkit.getScheduler().runTask(plugin, () -> openView(open.getView(), p, plugin));
                 }
