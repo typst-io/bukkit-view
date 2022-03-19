@@ -12,5 +12,5 @@ public class ChestView {
     private final String title;
     private final int row;
     private final Map<Integer, ViewItem> items;
-    private final Function<CloseEvent, CloseAction> closeEvent;
+    private final Function<CloseEvent, ViewAction> closeEvent;
 }
