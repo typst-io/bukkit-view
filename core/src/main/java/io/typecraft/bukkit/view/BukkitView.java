@@ -96,7 +96,27 @@ public class BukkitView {
 
         @EventHandler
         public void onClose(InventoryCloseEvent e) {
-
+            Inventory topInv = e.getView().getTopInventory();
+            ViewHolder holder = topInv.getHolder() instanceof ViewHolder ? ((ViewHolder) topInv.getHolder()) : null;
+            if (holder == null || !holder.getPlugin().getName().equals(plugin.getName())) {
+                return;
+            }
+            ChestView view = holder.getView();
+            Player p = (Player) e.getPlayer();
+            if (view.getOnClose() != null) {
+                ViewAction action = ViewAction.NOTHING;
+                try {
+                    action = view.getOnClose().apply(new CloseEvent(p, e.getView(), e.getInventory()));
+                } catch (Exception ex) {
+                    plugin.getLogger().log(Level.WARNING, ex, () -> "Error on InventoryClose!");
+                }
+                if (action instanceof ViewAction.Reopen) {
+                    Bukkit.getScheduler().runTask(plugin, () -> openView(view, p, plugin));
+                } else if (action instanceof ViewAction.Open) {
+                    ViewAction.Open open = (ViewAction.Open) action;
+                    Bukkit.getScheduler().runTask(plugin, () -> openView(open.getView(), p, plugin));
+                }
+            }
         }
     }
 }
