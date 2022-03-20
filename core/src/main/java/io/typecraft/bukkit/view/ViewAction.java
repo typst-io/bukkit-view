@@ -7,7 +7,7 @@ import java.util.concurrent.Future;
 public interface ViewAction {
     Nothing NOTHING = new Nothing();
     Close CLOSE = new Close();
-    Cancel CANCEL = new Cancel();
+    Reopen CANCEL = new Reopen();
 
     class Nothing implements ViewAction {
         private Nothing() {
@@ -20,8 +20,8 @@ public interface ViewAction {
     }
 
     @Data
-    class Cancel implements ViewAction {
-        private Cancel() {
+    class Reopen implements ViewAction {
+        private Reopen() {
         }
     }
 
