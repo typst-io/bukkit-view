@@ -13,4 +13,3 @@ public class CloseEvent {
     private final InventoryView view;
     private final Inventory action;
 }
-

@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.typecraft:bukkit-view-core:2.0.2")
+    compileOnly("io.typecraft:bukkit-view-core:2.1.0")
 }
 ```
 
@@ -29,8 +29,7 @@ dependencies {
     <dependency>
         <groupId>io.typecraft</groupId>
         <artifactId>bukkit-view-core</artifactId>
-        <version>2.0.2</version>
-        <scope>provided</scope>
+        <version>2.1.0</version>
     </dependency>
 </dependencies>
 ```
@@ -55,12 +54,12 @@ Map<Integer, ViewItem> map = new HashMap<>();
 String title = "title";
 int row = 1;
 map.put(3, new ViewItem(
-        new ItemStack(Material.DIAMOND),
-        e -> {
-            // this view item don't -- also shouldn't -- know how to open view,
-            // just tell what view want to open.
-            return new ViewAction.Open(subView);
-        }
+    new ItemStack(Material.DIAMOND),
+    e -> {
+        // this view item don't -- also shouldn't -- know how to open view,
+        // just tell what view want to open.
+        return new ViewAction.Open(subView);
+    }
 ));
 ChestView view = new ChestView(title, row, map);
 BukkitView.openView(view, player, plugin);
@@ -69,12 +68,19 @@ BukkitView.openView(view, player, plugin);
 To open asynchronously:
 ```java
 new ViewItem(
-        bukkitItemStack,
-        e -> {
-            Future<ChestView> myChestViewFuture;
-            return new ViewAction.OpenAsync(myChestViewFuture);
-        }
+    bukkitItemStack,
+    e -> {
+        Future<ChestView> myChestViewFuture;
+        return new ViewAction.OpenAsync(myChestViewFuture);
+    }
 )
+```
+
+On close the view:
+```java
+new ChestView(title, row, map, closeEvent -> {
+    return ViewAction.NOTHING; // or ViewAction.REOPEN
+})
 ```
 
 ## PageView
@@ -85,10 +91,10 @@ Default construction `ofDefault()` for `PageViewLayout`:
 // Lazy `Function<PageContext, ViewItem>` not just `ViewItem`
 List<Function<PageContext, ViewItem>> items = ...;
 PageViewLayout layout = PageViewLayout.ofDefault(
-        "title", 
-        6, 
-        Material.STONE_BUTTON, 
-        items
+    "title", 
+    6, 
+    Material.STONE_BUTTON, 
+    items
 );
 ```
 
