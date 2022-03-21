@@ -7,7 +7,7 @@ import java.util.concurrent.Future;
 public interface ViewAction {
     Nothing NOTHING = new Nothing();
     Close CLOSE = new Close();
-    Reopen CANCEL = new Reopen();
+    Reopen REOPEN = new Reopen();
 
     class Nothing implements ViewAction {
         private Nothing() {

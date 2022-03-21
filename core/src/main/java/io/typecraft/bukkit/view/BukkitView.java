@@ -58,24 +58,9 @@ public class BukkitView {
                 try {
                     action = viewItem.getOnClick().apply(new ClickEvent(p, e.getClick(), e.getAction(), e.getHotbarButton()));
                 } catch (Exception ex) {
-                    plugin.getLogger().log(Level.WARNING, ex, () -> "Error on InventoryClick!");
+                    plugin.getLogger().log(Level.WARNING, ex, () -> "Error on inventory click!");
                 }
-                if (action instanceof ViewAction.Open) {
-                    ViewAction.Open open = (ViewAction.Open) action;
-                    Bukkit.getScheduler().runTask(plugin, () -> openView(open.getView(), p, plugin));
-                } else if (action instanceof ViewAction.Close) {
-                    Bukkit.getScheduler().runTask(plugin, p::closeInventory);
-                } else if (action instanceof ViewAction.OpenAsync) {
-                    ViewAction.OpenAsync openAsync = ((ViewAction.OpenAsync) action);
-                    Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-                        try {
-                            ChestView chestView = openAsync.getViewFuture().get(30, TimeUnit.SECONDS);
-                            Bukkit.getScheduler().runTask(plugin, () -> openView(chestView, p, plugin));
-                        } catch (InterruptedException | ExecutionException | TimeoutException ex) {
-                            plugin.getLogger().log(Level.WARNING, ex, () -> "Error while waiting to get a chest view.");
-                        }
-                    });
-                }
+                handleAction(p, view, action);
             }
             e.setCancelled(true);
         }
@@ -103,20 +88,38 @@ public class BukkitView {
             }
             ChestView view = holder.getView();
             Player p = (Player) e.getPlayer();
-            if (view.getOnClose() != null) {
-                ViewAction action = ViewAction.NOTHING;
-                try {
-                    action = view.getOnClose().apply(new CloseEvent(p, e.getView(), e.getInventory()));
-                } catch (Exception ex) {
-                    plugin.getLogger().log(Level.WARNING, ex, () -> "Error on InventoryClose!");
-                }
-                if (action instanceof ViewAction.Reopen) {
-                    Bukkit.getScheduler().runTask(plugin, () -> openView(view, p, plugin));
-                } else if (action instanceof ViewAction.Open) {
-                    ViewAction.Open open = (ViewAction.Open) action;
-                    Bukkit.getScheduler().runTask(plugin, () -> openView(open.getView(), p, plugin));
-                }
+            ViewAction action = ViewAction.NOTHING;
+            try {
+                action = view.getOnClose().apply(new CloseEvent(p, e.getView(), e.getInventory()));
+            } catch (Exception ex) {
+                plugin.getLogger().log(Level.WARNING, ex, () -> "Error on inventory close!");
             }
+            handleAction(p, view, action);
+        }
+
+        private void handleAction(Player p, ChestView currentView, ViewAction action) {
+            if (action instanceof ViewAction.Open) {
+                ViewAction.Open open = (ViewAction.Open) action;
+                Bukkit.getScheduler().runTask(plugin, () -> openView(open.getView(), p, plugin));
+            } else if (action instanceof ViewAction.Reopen) {
+                Bukkit.getScheduler().runTask(plugin, () -> openView(currentView, p, plugin));
+            } else if (action instanceof ViewAction.Close) {
+                Bukkit.getScheduler().runTask(plugin, p::closeInventory);
+            } else if (action instanceof ViewAction.OpenAsync) {
+                ViewAction.OpenAsync openAsync = ((ViewAction.OpenAsync) action);
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                    try {
+                        ChestView chestView = openAsync.getViewFuture().get(30, TimeUnit.SECONDS);
+                        Bukkit.getScheduler().runTask(plugin, () -> openView(chestView, p, plugin));
+                    } catch (InterruptedException | ExecutionException | TimeoutException ex) {
+                        plugin.getLogger().log(Level.WARNING, ex, () -> "Error while waiting to get a chest view.");
+                    }
+                });
+            }
+        }
+
+        private void runTask(Runnable runnable) {
+            Bukkit.getScheduler().runTask(plugin, runnable);
         }
     }
 }

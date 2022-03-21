@@ -6,6 +6,8 @@ import lombok.Data;
 public interface PageViewAction {
     PageViewAction NOTHING = new Prime(ViewAction.NOTHING);
     PageViewAction CLOSE = new Prime(ViewAction.CLOSE);
+    // can't refresh!
+    PageViewAction REOPEN = new Prime(ViewAction.REOPEN);
 
     @Data
     class Prime implements PageViewAction {
