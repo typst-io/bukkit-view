@@ -10,6 +10,4 @@ import org.bukkit.inventory.InventoryView;
 @With
 public class CloseEvent {
     private final Player player;
-    private final InventoryView view;
-    private final Inventory action;
 }
