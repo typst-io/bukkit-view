@@ -65,7 +65,7 @@ ChestView view = new ChestView(title, row, map);
 BukkitView.openView(view, player, plugin);
 ```
 
-To open asynchronously:
+To open asynchronously, `ViewAction.OpenAsync(Future<View>)`:
 ```java
 new ViewItem(
     bukkitItemStack,
