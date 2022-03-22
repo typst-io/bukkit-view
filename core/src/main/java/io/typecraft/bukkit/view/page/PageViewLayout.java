@@ -26,23 +26,36 @@ public class PageViewLayout {
     private final List<Integer> slots;
     private final Map<Integer, Function<PageContext, PageViewControl>> controls;
 
+    @Deprecated
+    public PageViewLayout(String title, int row, List<Function<PageContext, ViewItem>> contents, List<Integer> slots, Map<Integer, Function<PageContext, PageViewControl>> controls) {
+        this.title = title;
+        this.row = row;
+        this.contents = contents;
+        this.slots = slots;
+        this.controls = controls;
+    }
+
+    public static PageViewLayout of(String title, int row, List<Function<PageContext, ViewItem>> contents, List<Integer> slots, Map<Integer, Function<PageContext, PageViewControl>> controls) {
+        return new PageViewLayout(title, row, contents, slots, controls);
+    }
+
     public static PageViewLayout ofDefault(String title, int row, Material buttonMaterial, List<Function<PageContext, ViewItem>> elements) {
         int cSize = (row - 1) * 9;
         List<Integer> slots = IntStream.range(0, cSize).boxed().collect(Collectors.toList());
         Map<Integer, Function<PageContext, PageViewControl>> controls = new HashMap<>();
-        controls.put(cSize + 3, ctx -> new PageViewControl(
+        controls.put(cSize + 3, ctx -> PageViewControl.of(
                 createItemStack(buttonMaterial, ctx.getPage(), String.format(
                         "<- %s/%s", ctx.getPage(), ctx.getMaxPage()
                 )),
                 e -> new PageViewAction.SetPage(ctx.getPage() - 1)
         ));
-        controls.put(cSize + 5, ctx -> new PageViewControl(
+        controls.put(cSize + 5, ctx -> PageViewControl.of(
                 createItemStack(buttonMaterial, ctx.getPage(), String.format(
                         "%s/%s ->", ctx.getPage(), ctx.getMaxPage()
                 )),
                 e -> new PageViewAction.SetPage(ctx.getPage() + 1)
         ));
-        return new PageViewLayout(title, row, elements, slots, controls);
+        return of(title, row, elements, slots, controls);
     }
 
     public ChestView toView(int page) {
@@ -61,7 +74,7 @@ public class PageViewLayout {
         // Controls
         for (Map.Entry<Integer, Function<PageContext, PageViewControl>> pair : getControls().entrySet()) {
             PageViewControl control = pair.getValue().apply(ctx);
-            items.put(pair.getKey(), new ViewItem(
+            items.put(pair.getKey(), ViewItem.of(
                     control.getItem(),
                     event -> {
                         PageViewAction action = control.getOnClick().apply(event);

@@ -25,8 +25,11 @@ public class BukkitView {
         holder.setView(view);
         Inventory inv = Bukkit.createInventory(holder, view.getRow() * 9, view.getTitle());
         holder.setInventory(inv);
-        for (Map.Entry<Integer, ViewItem> pair : view.getItems().entrySet()) {
+        for (Map.Entry<Integer, ViewItem> pair : view.getControls().entrySet()) {
             inv.setItem(pair.getKey(), pair.getValue().getItem());
+        }
+        for (Map.Entry<Integer, ItemStack> pair : view.getContents().entrySet()) {
+            inv.setItem(pair.getKey(), pair.getValue());
         }
         player.openInventory(inv);
     }

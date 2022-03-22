@@ -69,7 +69,7 @@ public class ViewPlugin extends JavaPlugin {
         barrierItemMeta.setDisplayName("§c나가기");
         barrierItem.setItemMeta(barrierItemMeta);
 
-        controls.put(8, new ViewItem(barrierItem, e -> ViewAction.CLOSE));
+        controls.put(8, ViewItem.of(barrierItem, e -> ViewAction.CLOSE));
         return new ChestView("Chest", 6, controls);
     }
 
@@ -82,7 +82,7 @@ public class ViewPlugin extends JavaPlugin {
                         meta.setOwningPlayer(p);
                         headItem.setItemMeta(meta);
                     }
-                    return new ViewItem(headItem, e -> {
+                    return ViewItem.of(headItem, e -> {
                         Player clicker = e.getClicker();
                         if (!p.isOnline()) {
                             clicker.sendMessage(ChatColor.RED + "Player '" + p.getName() + "' not in online!");

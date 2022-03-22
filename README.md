@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.typecraft:bukkit-view-core:3.1.0")
+    compileOnly("io.typecraft:bukkit-view-core:3.2.0")
 }
 ```
 
@@ -29,7 +29,7 @@ dependencies {
     <dependency>
         <groupId>io.typecraft</groupId>
         <artifactId>bukkit-view-core</artifactId>
-        <version>3.1.0</version>
+        <version>3.2.0</version>
     </dependency>
 </dependencies>
 ```
@@ -53,7 +53,7 @@ ChestView subView = ...;
 Map<Integer, ViewItem> map = new HashMap<>();
 String title = "title";
 int row = 1;
-map.put(3, new ViewItem(
+map.put(3, ViewItem.of(
     new ItemStack(Material.DIAMOND),
     e -> {
         // this view item don't -- also shouldn't -- know how to open view,
@@ -67,7 +67,7 @@ BukkitView.openView(view, player, plugin);
 
 To open asynchronously, `ViewAction.OpenAsync(Future<View>)`:
 ```java
-new ViewItem(
+ViewItem.of(
     bukkitItemStack,
     e -> {
         Future<ChestView> myChestViewFuture;
@@ -109,7 +109,7 @@ List<Integer> slots = ...;
 Map<Integer, Function<PageContext, PageViewControl>> controls = ...;
 String title = "title";
 int row = 6;
-PageViewLayout layout = new PageViewLayout(title, row, items, slots, controls);
+PageViewLayout layout = PageViewLayout.of(title, row, items, slots, controls);
 ```
 
 Evaluate a single page from the layout and open:
@@ -124,7 +124,7 @@ BukkitView.openView(view, player, plugin);
 
 Constructions:
 
-`new ViewItem(ItemStack, Function<ClickEvent, ViewAction>)`
+`ViewItem.of(ItemStack, Function<ClickEvent, ViewAction>)`
 
 > (ItemStack, ClickEvent -> ViewAction) -> ViewItem
 
