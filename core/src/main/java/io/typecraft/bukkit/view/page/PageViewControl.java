@@ -2,7 +2,7 @@ package io.typecraft.bukkit.view.page;
 
 import io.typecraft.bukkit.view.ClickEvent;
 import io.typecraft.bukkit.view.ViewAction;
-import io.typecraft.bukkit.view.ViewItem;
+import io.typecraft.bukkit.view.ViewControl;
 import lombok.Data;
 import lombok.With;
 import org.bukkit.inventory.ItemStack;
@@ -37,8 +37,8 @@ public class PageViewControl {
         });
     }
 
-    public static PageViewControl from(ViewItem viewItem) {
-        return new PageViewControl(viewItem.getItem(), e -> new PageViewAction.Prime(viewItem.getOnClick().apply(e)));
+    public static PageViewControl from(ViewControl viewControl) {
+        return new PageViewControl(viewControl.getItem(), e -> new PageViewAction.Prime(viewControl.getOnClick().apply(e)));
     }
 
     public ItemStack getItem() {

@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.typecraft:bukkit-view-core:3.3.0")
+    implementation("io.typecraft:bukkit-view-core:4.0.0")
 }
 ```
 
@@ -29,7 +29,7 @@ dependencies {
     <dependency>
         <groupId>io.typecraft</groupId>
         <artifactId>bukkit-view-core</artifactId>
-        <version>3.3.0</version>
+        <version>4.0.0</version>
     </dependency>
 </dependencies>
 ```
@@ -58,10 +58,10 @@ public class MyPlugin extends JavaPlugin {
 ```java
 ChestView subView = ...;
 
-Map<Integer, ViewItem> map = new HashMap<>();
+Map<Integer, ViewControl> map = new HashMap<>();
 String title = "title";
 int row = 1;
-map.put(3, ViewItem.of(
+map.put(3, ViewControl.of(
     new ItemStack(Material.DIAMOND),
     e -> {
         // this view item don't -- also shouldn't -- know how to open view,
@@ -69,13 +69,14 @@ map.put(3, ViewItem.of(
         return new ViewAction.Open(subView);
     }
 ));
-ChestView view = new ChestView(title, row, map);
+ViewContents contents = ViewContents.ofControls(map);
+ChestView view = ChestView.just(title, row, contents);
 BukkitView.openView(view, player, plugin);
 ```
 
 To open asynchronously, `ViewAction.OpenAsync(Future<View>)`:
 ```java
-ViewItem.of(
+ViewControl.of(
     bukkitItemStack,
     e -> {
         Future<ChestView> myChestViewFuture;
@@ -84,9 +85,19 @@ ViewItem.of(
 )
 ```
 
+To update just contents, `ViewAction.Update` also `ViewAction.UpdateAsync(Future<ViewContents>)`
+
+```java
+ViewControl.of(
+    bukkitItemStack,
+    e -> new ViewAction.Update(newContents)
+    // UpdateAsync if needed
+)
+```
+
 On close the view:
 ```java
-new ChestView(title, row, map, closeEvent -> {
+ChestView.of(title, row, map, closeEvent -> {
     return ViewAction.NOTHING; // or ViewAction.REOPEN
 })
 ```
@@ -96,8 +107,8 @@ new ChestView(title, row, map, closeEvent -> {
 Default construction `ofDefault()` for `PageViewLayout`:
 
 ```java
-// Lazy `Function<PageContext, ViewItem>` not just `ViewItem`
-List<Function<PageContext, ViewItem>> items = ...;
+// Lazy `Function<PageContext, ViewControl>` not just `ViewControl`
+List<Function<PageContext, ViewControl>> items = ...;
 PageViewLayout layout = PageViewLayout.ofDefault(
     "title", 
     6, 
@@ -110,7 +121,7 @@ Full construction for `PageViewLayout`:
 
 ```java
 // Paging elements
-List<Function<PageContext, ViewItem>> items = ...;
+List<Function<PageContext, ViewControl>> items = ...;
 // Paging elements will be put in this slots.
 List<Integer> slots = ...;
 // Control means fixed view-item, won't affected by view paging.
@@ -128,18 +139,18 @@ ChestView view = layout.toView(page);
 BukkitView.openView(view, player, plugin);
 ```
 
-## ViewItem
+## ViewControl
 
 Constructions:
 
-`ViewItem.of(ItemStack, Function<ClickEvent, ViewAction>)`
+`ViewControl.of(ItemStack, Function<ClickEvent, ViewAction>)`
 
-> (ItemStack, ClickEvent -> ViewAction) -> ViewItem
+> (ItemStack, ClickEvent -> ViewAction) -> ViewControl
 
-`ViewItem.just(ItemStack)`
+`ViewControl.just(ItemStack)`
 
-> ItemStack -> ViewItem
+> ItemStack -> ViewControl
 
-`ViewItem.consumer(ItemStack, Consumer<ViewAction>)`
+`ViewControl.consumer(ItemStack, Consumer<ViewAction>)`
 
-> (ItemStack, ClickEvent -> Unit) -> ViewItem
+> (ItemStack, ClickEvent -> Unit) -> ViewControl

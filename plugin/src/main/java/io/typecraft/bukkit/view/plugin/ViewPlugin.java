@@ -1,9 +1,6 @@
 package io.typecraft.bukkit.view.plugin;
 
-import io.typecraft.bukkit.view.BukkitView;
-import io.typecraft.bukkit.view.ChestView;
-import io.typecraft.bukkit.view.ViewAction;
-import io.typecraft.bukkit.view.ViewItem;
+import io.typecraft.bukkit.view.*;
 import io.typecraft.bukkit.view.page.PageContext;
 import io.typecraft.bukkit.view.page.PageViewLayout;
 import org.bukkit.Material;
@@ -21,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ViewPlugin extends JavaPlugin {
     @Override
@@ -56,8 +52,8 @@ public class ViewPlugin extends JavaPlugin {
     }
 
     private static ChestView createChestView() {
-        Map<Integer, ViewItem> controls = new HashMap<>();
-        ViewItem wall = ViewItem.just(new ItemStack(Material.BLACK_STAINED_GLASS_PANE));
+        Map<Integer, ViewControl> controls = new HashMap<>();
+        ViewControl wall = ViewControl.just(new ItemStack(Material.BLACK_STAINED_GLASS_PANE));
         for (int i = 0; i < 9; i++) {
             controls.put(i, wall);
         }
@@ -65,19 +61,19 @@ public class ViewPlugin extends JavaPlugin {
         ItemStack barrierItem = new ItemStack(Material.BARRIER);
         ItemMeta barrierItemMeta = barrierItem.getItemMeta();
         assert barrierItemMeta != null;
-        barrierItemMeta.setDisplayName("§c나가기");
+        barrierItemMeta.setDisplayName("§cEXIT");
         barrierItem.setItemMeta(barrierItemMeta);
 
-        controls.put(8, ViewItem.of(barrierItem, e -> ViewAction.CLOSE));
-        return new ChestView("Chest", 6, controls);
+        controls.put(8, ViewControl.of(barrierItem, e -> ViewAction.CLOSE));
+        return ChestView.just("Chest", 6, ViewContents.ofControls(controls));
     }
 
     private static PageViewLayout createMyViewLayout(String title) {
-        List<Function<PageContext, ViewItem>> pagingContents = Arrays.stream(Material.values())
+        List<Function<PageContext, ViewControl>> pagingContents = Arrays.stream(Material.values())
                 .filter(mat -> mat.isItem() && !mat.isAir())
-                .map(material -> (Function<PageContext, ViewItem>) ctx -> {
+                .map(material -> (Function<PageContext, ViewControl>) ctx -> {
                     ItemStack item = new ItemStack(material);
-                    return ViewItem.of(item, e -> {
+                    return ViewControl.of(item, e -> {
                         Player clicker = e.getClicker();
                         if (clicker.isOp()) {
                             clicker.getInventory().addItem(new ItemStack(material));

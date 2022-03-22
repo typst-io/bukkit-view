@@ -2,7 +2,8 @@ package io.typecraft.bukkit.view.page;
 
 import io.typecraft.bukkit.view.ChestView;
 import io.typecraft.bukkit.view.ViewAction;
-import io.typecraft.bukkit.view.ViewItem;
+import io.typecraft.bukkit.view.ViewContents;
+import io.typecraft.bukkit.view.ViewControl;
 import lombok.Data;
 import lombok.With;
 import org.bukkit.Material;
@@ -17,29 +18,16 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-@Data
+@Data(staticConstructor = "of")
 @With
 public class PageViewLayout {
     private final String title;
     private final int row;
-    private final List<Function<PageContext, ViewItem>> contents;
+    private final List<Function<PageContext, ViewControl>> elements;
     private final List<Integer> slots;
     private final Map<Integer, Function<PageContext, PageViewControl>> controls;
 
-    @Deprecated
-    public PageViewLayout(String title, int row, List<Function<PageContext, ViewItem>> contents, List<Integer> slots, Map<Integer, Function<PageContext, PageViewControl>> controls) {
-        this.title = title;
-        this.row = row;
-        this.contents = contents;
-        this.slots = slots;
-        this.controls = controls;
-    }
-
-    public static PageViewLayout of(String title, int row, List<Function<PageContext, ViewItem>> contents, List<Integer> slots, Map<Integer, Function<PageContext, PageViewControl>> controls) {
-        return new PageViewLayout(title, row, contents, slots, controls);
-    }
-
-    public static PageViewLayout ofDefault(String title, int row, Material buttonMaterial, List<Function<PageContext, ViewItem>> elements) {
+    public static PageViewLayout ofDefault(String title, int row, Material buttonMaterial, List<Function<PageContext, ViewControl>> elements) {
         int cSize = (row - 1) * 9;
         List<Integer> slots = IntStream.range(0, cSize).boxed().collect(Collectors.toList());
         Map<Integer, Function<PageContext, PageViewControl>> controls = new HashMap<>();
@@ -59,22 +47,22 @@ public class PageViewLayout {
     }
 
     public ChestView toView(int page) {
-        Map<Integer, ViewItem> items = new HashMap<>();
+        Map<Integer, ViewControl> viewControls = new HashMap<>();
         int contentSize = getSlots().size();
-        int count = getContents().size();
+        int count = getElements().size();
         int maxPage = count / contentSize + Math.min(count % contentSize, 1);
         int coercedPage = Math.max(Math.min(page, maxPage), 1);
-        PageContext ctx = new PageContext(maxPage, coercedPage);
-        List<Function<PageContext, ViewItem>> subItemList = pagingList(contentSize, coercedPage, getContents());
+        PageContext ctx = PageContext.of(maxPage, coercedPage);
+        List<Function<PageContext, ViewControl>> subItemList = pagingList(contentSize, coercedPage, getElements());
         // Contents
         for (int i = 0; i < subItemList.size(); i++) {
             int slot = getSlots().get(i);
-            items.put(slot, subItemList.get(i).apply(ctx));
+            viewControls.put(slot, subItemList.get(i).apply(ctx));
         }
         // Controls
         for (Map.Entry<Integer, Function<PageContext, PageViewControl>> pair : getControls().entrySet()) {
             PageViewControl control = pair.getValue().apply(ctx);
-            items.put(pair.getKey(), ViewItem.of(
+            viewControls.put(pair.getKey(), ViewControl.of(
                     control.getItem(),
                     event -> {
                         PageViewAction action = control.getOnClick().apply(event);
@@ -83,14 +71,16 @@ public class PageViewLayout {
                             return prime.getAction();
                         } else if (action instanceof PageViewAction.SetPage) {
                             PageViewAction.SetPage setPage = (PageViewAction.SetPage) action;
-                            return new ViewAction.Update(toView(setPage.getPage()));
+                            ChestView newView = toView(setPage.getPage());
+                            return new ViewAction.Update(newView.getContents());
                         } else {
                             return ViewAction.NOTHING;
                         }
                     }
             ));
         }
-        return new ChestView(getTitle(), getRow(), items, new HashMap<>(), e -> ViewAction.NOTHING);
+        ViewContents contents = ViewContents.ofControls(viewControls);
+        return ChestView.just(getTitle(), getRow(), contents);
     }
 
     private static <T> List<T> pagingList(int elementSize, int page, List<T> list) {

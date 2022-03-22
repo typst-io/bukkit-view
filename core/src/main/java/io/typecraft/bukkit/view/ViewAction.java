@@ -32,12 +32,12 @@ public interface ViewAction {
 
     @Data
     class Update implements ViewAction {
-        private final ChestView view;
+        private final ViewContents contents;
     }
 
     @Data
     class UpdateAsync implements ViewAction {
-        private final Future<ChestView> viewFuture;
+        private final Future<ViewContents> contentsFuture;
     }
 
     @Data

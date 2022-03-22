@@ -24,16 +24,16 @@ public class BukkitView {
         holder.setView(view);
         Inventory inv = Bukkit.createInventory(holder, view.getRow() * 9, view.getTitle());
         holder.setInventory(inv);
-        updateInventory(view, inv);
+        updateInventory(view.getContents(), inv);
         player.openInventory(inv);
     }
 
-    private static void updateInventory(ChestView view, Inventory inv) {
+    private static void updateInventory(ViewContents contents, Inventory inv) {
         inv.clear();
-        for (Map.Entry<Integer, ViewItem> pair : view.getControls().entrySet()) {
+        for (Map.Entry<Integer, ViewControl> pair : contents.getControls().entrySet()) {
             inv.setItem(pair.getKey(), pair.getValue().getItem());
         }
-        for (Map.Entry<Integer, ItemStack> pair : view.getContents().entrySet()) {
+        for (Map.Entry<Integer, ItemStack> pair : contents.getItems().entrySet()) {
             inv.setItem(pair.getKey(), pair.getValue());
         }
     }
@@ -65,12 +65,12 @@ public class BukkitView {
             }
             ChestView view = holder.getView();
             Player p = (Player) e.getWhoClicked();
-            ViewItem viewItem = view.getControls().get(e.getRawSlot());
+            ViewControl viewControl = view.getContents().getControls().get(e.getRawSlot());
             // Cancel
             switch (e.getClick()) {
                 case LEFT:
                 case RIGHT:
-                    if (viewItem != null) {
+                    if (viewControl != null) {
                         e.setCancelled(true);
                     }
                     break;
@@ -79,10 +79,10 @@ public class BukkitView {
                     break;
             }
             // Notify
-            if (viewItem != null) {
+            if (viewControl != null) {
                 ViewAction action = ViewAction.NOTHING;
                 try {
-                    action = viewItem.getOnClick().apply(new ClickEvent(view, p, e.getClick(), e.getAction(), e.getHotbarButton()));
+                    action = viewControl.getOnClick().apply(new ClickEvent(view, p, e.getClick(), e.getAction(), e.getHotbarButton()));
                 } catch (Exception ex) {
                     plugin.getLogger().log(Level.WARNING, ex, () -> "Error on inventory click!");
                 }
@@ -101,7 +101,7 @@ public class BukkitView {
             }
             ChestView view = holder.getView();
             if (e.getRawSlots().stream()
-                    .anyMatch(a -> view.getControls().get(a) != null)) {
+                    .anyMatch(a -> view.getContents().getControls().get(a) != null)) {
                 e.setCancelled(true);
             }
             // Update view
@@ -151,16 +151,15 @@ public class BukkitView {
                 ViewAction.Update update = (ViewAction.Update) action;
                 runSync(() -> {
                     giveBackContents(currentView, p);
-                    ChestView newView = update.getView();
-                    holder.setView(newView);
-                    updateInventory(newView, holder.getInventory());
+                    updateInventory(update.getContents(), holder.getInventory());
+                    holder.setView(currentView.withContents(update.getContents()));
                 });
             } else if (action instanceof ViewAction.UpdateAsync) {
                 ViewAction.UpdateAsync updateAsync = (ViewAction.UpdateAsync) action;
                 runAsync(() -> {
                     try {
-                        ChestView chestView = updateAsync.getViewFuture().get(30, TimeUnit.SECONDS);
-                        runSync(() -> handleAction(p, holder, new ViewAction.Update(chestView)));
+                        ViewContents contents = updateAsync.getContentsFuture().get(30, TimeUnit.SECONDS);
+                        runSync(() -> handleAction(p, holder, new ViewAction.Update(contents)));
                     } catch (Exception ex) {
                         plugin.getLogger().log(Level.WARNING, ex, () -> "Error while getting a view to update.");
                     }
@@ -173,23 +172,23 @@ public class BukkitView {
             for (int i = 0; i < contents.length; i++) {
                 ItemStack item = contents[i];
                 if (item != null && item.getType() != Material.AIR &&
-                        !view.getControls().containsKey(i)) {
-                    view.getContents().put(i, item);
+                        !view.getContents().getControls().containsKey(i)) {
+                    view.getContents().getItems().put(i, item);
                 } else {
-                    view.getContents().remove(i);
+                    view.getContents().getItems().remove(i);
                 }
             }
         }
 
         private static void giveBackContents(ChestView view, Player p) {
-            ItemStack[] items = view.getContents().values().stream()
+            ItemStack[] items = view.getContents().getItems().values().stream()
                     .filter(item -> item != null && item.getType() != Material.AIR)
                     .toArray(ItemStack[]::new);
             HashMap<Integer, ItemStack> failures = p.getInventory().addItem(items);
             for (ItemStack item : failures.values()) {
                 p.getWorld().dropItem(p.getEyeLocation(), item);
             }
-            view.getContents().clear();
+            view.getContents().getItems().clear();
         }
 
         private void runSync(Runnable runnable) {

@@ -3,7 +3,7 @@ package io.typecraft.bukkit.view.page;
 import lombok.Data;
 import lombok.With;
 
-@Data
+@Data(staticConstructor = "of")
 @With
 public class PageContext {
     private final int maxPage;
