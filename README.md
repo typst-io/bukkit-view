@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.typecraft:bukkit-view-core:3.0.0")
+    compileOnly("io.typecraft:bukkit-view-core:3.1.0")
 }
 ```
 
@@ -29,7 +29,7 @@ dependencies {
     <dependency>
         <groupId>io.typecraft</groupId>
         <artifactId>bukkit-view-core</artifactId>
-        <version>3.0.0</version>
+        <version>3.1.0</version>
     </dependency>
 </dependencies>
 ```

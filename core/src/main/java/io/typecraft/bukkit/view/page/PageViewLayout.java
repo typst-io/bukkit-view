@@ -77,7 +77,7 @@ public class PageViewLayout {
                     }
             ));
         }
-        return new ChestView(getTitle(), getRow(), items, null);
+        return new ChestView(getTitle(), getRow(), items, new HashMap<>(), e -> ViewAction.NOTHING);
     }
 
     private static <T> List<T> pagingList(int elementSize, int page, List<T> list) {

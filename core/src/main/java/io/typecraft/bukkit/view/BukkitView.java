@@ -1,6 +1,7 @@
 package io.typecraft.bukkit.view;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -8,8 +9,10 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -52,17 +55,44 @@ public class BukkitView {
             }
             ChestView view = holder.getView();
             Player p = (Player) e.getWhoClicked();
-            ViewItem viewItem = view.getItems().get(e.getRawSlot());
+            ViewItem viewItem = view.getControls().get(e.getRawSlot());
+            // Cancel
+            switch (e.getClick()) {
+                case LEFT:
+                case SHIFT_LEFT:
+                case RIGHT:
+                case SHIFT_RIGHT:
+                    if (viewItem != null) {
+                        e.setCancelled(true);
+                    }
+                    break;
+                default:
+                    e.setCancelled(true);
+                    break;
+            }
+            // Notify
             if (viewItem != null) {
                 ViewAction action = ViewAction.NOTHING;
                 try {
-                    action = viewItem.getOnClick().apply(new ClickEvent(p, e.getClick(), e.getAction(), e.getHotbarButton()));
+                    action = viewItem.getOnClick().apply(new ClickEvent(view, p, e.getClick(), e.getAction(), e.getHotbarButton()));
                 } catch (Exception ex) {
                     plugin.getLogger().log(Level.WARNING, ex, () -> "Error on inventory click!");
                 }
                 handleAction(p, view, action);
             }
-            e.setCancelled(true);
+            // Update contents
+            runTask(() -> {
+                ItemStack[] contents = topInv.getContents();
+                for (int i = 0; i < contents.length; i++) {
+                    ItemStack item = contents[i];
+                    if (item != null && item.getType() != Material.AIR &&
+                            !view.getControls().containsKey(i)) {
+                        view.getContents().put(i, item);
+                    } else {
+                        view.getContents().remove(i);
+                    }
+                }
+            });
         }
 
         @EventHandler
@@ -74,7 +104,7 @@ public class BukkitView {
             }
             ChestView view = holder.getView();
             if (e.getRawSlots().stream()
-                    .anyMatch(a -> view.getItems().get(a) != null)) {
+                    .anyMatch(a -> view.getControls().get(a) != null)) {
                 e.setCancelled(true);
             }
         }
@@ -90,11 +120,22 @@ public class BukkitView {
             Player p = (Player) e.getPlayer();
             ViewAction action = ViewAction.NOTHING;
             try {
-                action = view.getOnClose().apply(new CloseEvent(p));
+                action = view.getOnClose().apply(new CloseEvent(view, p));
             } catch (Exception ex) {
                 plugin.getLogger().log(Level.WARNING, ex, () -> "Error on inventory close!");
             }
             handleAction(p, view, action);
+            // Get back the items
+            runTask(() -> {
+                ItemStack[] items = view.getContents().values().stream()
+                        .filter(item -> item != null && item.getType() != Material.AIR)
+                        .toArray(ItemStack[]::new);
+                HashMap<Integer, ItemStack> failures = p.getInventory().addItem(items);
+                for (ItemStack item : failures.values()) {
+                    p.getWorld().dropItem(p.getEyeLocation(), item);
+                }
+                view.getContents().clear();
+            });
         }
 
         private void handleAction(Player p, ChestView currentView, ViewAction action) {
