@@ -1,6 +1,6 @@
 rootProject.name = 'bukkit-view'
 
-include('core', 'plugin')
+include('core', 'plugin', 'java')
 
 rootProject.children.forEach {
     it.name = "${rootProject.name}-${it.name}"
