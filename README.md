@@ -34,6 +34,14 @@ dependencies {
 </dependencies>
 ```
 
+### Quickstart
+
+https://github.com/typecraft-io/bukkit-view-template
+
+```shell
+git clone https://github.com/typecraft-io/bukkit-view-template
+```
+
 ## Initialize
 
 ```java
