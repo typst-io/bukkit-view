@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.typecraft:bukkit-view-core:3.2.0")
+    implementation("io.typecraft:bukkit-view-core:3.2.0")
 }
 ```
 
