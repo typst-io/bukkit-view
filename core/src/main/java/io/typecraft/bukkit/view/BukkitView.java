@@ -149,17 +149,19 @@ public class BukkitView {
                 });
             } else if (action instanceof ViewAction.Update) {
                 ViewAction.Update update = (ViewAction.Update) action;
-                runSync(() -> {
-                    giveBackContents(currentView, p);
-                    updateInventory(update.getContents(), holder.getInventory());
-                    holder.setView(currentView.withContents(update.getContents()));
-                });
+                giveBackContents(currentView, p);
+                updateInventory(update.getContents(), holder.getInventory());
+                holder.setView(currentView.withContents(update.getContents()));
             } else if (action instanceof ViewAction.UpdateAsync) {
                 ViewAction.UpdateAsync updateAsync = (ViewAction.UpdateAsync) action;
+                giveBackContents(currentView, p);
                 runAsync(() -> {
                     try {
                         ViewContents contents = updateAsync.getContentsFuture().get(30, TimeUnit.SECONDS);
-                        runSync(() -> handleAction(p, holder, new ViewAction.Update(contents)));
+                        runSync(() -> {
+                            updateInventory(contents, holder.getInventory());
+                            holder.setView(currentView.withContents(contents));
+                        });
                     } catch (Exception ex) {
                         plugin.getLogger().log(Level.WARNING, ex, () -> "Error while getting a view to update.");
                     }
