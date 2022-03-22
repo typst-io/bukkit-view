@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.typecraft:bukkit-view-core:3.2.0")
+    implementation("io.typecraft:bukkit-view-core:3.3.0")
 }
 ```
 
@@ -29,7 +29,7 @@ dependencies {
     <dependency>
         <groupId>io.typecraft</groupId>
         <artifactId>bukkit-view-core</artifactId>
-        <version>3.2.0</version>
+        <version>3.3.0</version>
     </dependency>
 </dependencies>
 ```

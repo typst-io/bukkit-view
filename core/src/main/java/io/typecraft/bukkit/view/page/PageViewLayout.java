@@ -83,7 +83,7 @@ public class PageViewLayout {
                             return prime.getAction();
                         } else if (action instanceof PageViewAction.SetPage) {
                             PageViewAction.SetPage setPage = (PageViewAction.SetPage) action;
-                            return new ViewAction.Open(toView(setPage.getPage()));
+                            return new ViewAction.Update(toView(setPage.getPage()));
                         } else {
                             return ViewAction.NOTHING;
                         }

@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -14,9 +15,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
 public class BukkitView {
@@ -25,13 +24,18 @@ public class BukkitView {
         holder.setView(view);
         Inventory inv = Bukkit.createInventory(holder, view.getRow() * 9, view.getTitle());
         holder.setInventory(inv);
+        updateInventory(view, inv);
+        player.openInventory(inv);
+    }
+
+    private static void updateInventory(ChestView view, Inventory inv) {
+        inv.clear();
         for (Map.Entry<Integer, ViewItem> pair : view.getControls().entrySet()) {
             inv.setItem(pair.getKey(), pair.getValue().getItem());
         }
         for (Map.Entry<Integer, ItemStack> pair : view.getContents().entrySet()) {
             inv.setItem(pair.getKey(), pair.getValue());
         }
-        player.openInventory(inv);
     }
 
     public static Listener viewListener(Plugin plugin) {
@@ -51,6 +55,9 @@ public class BukkitView {
 
         @EventHandler
         public void onClick(InventoryClickEvent e) {
+            if (e.getAction() == InventoryAction.NOTHING) {
+                return;
+            }
             Inventory topInv = e.getView().getTopInventory();
             ViewHolder holder = topInv.getHolder() instanceof ViewHolder ? ((ViewHolder) topInv.getHolder()) : null;
             if (holder == null || !holder.getPlugin().getName().equals(plugin.getName())) {
@@ -62,9 +69,7 @@ public class BukkitView {
             // Cancel
             switch (e.getClick()) {
                 case LEFT:
-                case SHIFT_LEFT:
                 case RIGHT:
-                case SHIFT_RIGHT:
                     if (viewItem != null) {
                         e.setCancelled(true);
                     }
@@ -81,21 +86,10 @@ public class BukkitView {
                 } catch (Exception ex) {
                     plugin.getLogger().log(Level.WARNING, ex, () -> "Error on inventory click!");
                 }
-                handleAction(p, view, action);
+                handleAction(p, holder, action);
             }
-            // Update contents
-            runTask(() -> {
-                ItemStack[] contents = topInv.getContents();
-                for (int i = 0; i < contents.length; i++) {
-                    ItemStack item = contents[i];
-                    if (item != null && item.getType() != Material.AIR &&
-                            !view.getControls().containsKey(i)) {
-                        view.getContents().put(i, item);
-                    } else {
-                        view.getContents().remove(i);
-                    }
-                }
-            });
+            // Update view
+            runSync(() -> updateView(topInv, view));
         }
 
         @EventHandler
@@ -110,6 +104,8 @@ public class BukkitView {
                     .anyMatch(a -> view.getControls().get(a) != null)) {
                 e.setCancelled(true);
             }
+            // Update view
+            runSync(() -> updateView(topInv, view));
         }
 
         @EventHandler
@@ -127,43 +123,81 @@ public class BukkitView {
             } catch (Exception ex) {
                 plugin.getLogger().log(Level.WARNING, ex, () -> "Error on inventory close!");
             }
-            handleAction(p, view, action);
+            handleAction(p, holder, action);
             // Get back the items
-            runTask(() -> {
-                ItemStack[] items = view.getContents().values().stream()
-                        .filter(item -> item != null && item.getType() != Material.AIR)
-                        .toArray(ItemStack[]::new);
-                HashMap<Integer, ItemStack> failures = p.getInventory().addItem(items);
-                for (ItemStack item : failures.values()) {
-                    p.getWorld().dropItem(p.getEyeLocation(), item);
-                }
-                view.getContents().clear();
-            });
+            runSync(() -> giveBackContents(view, p));
         }
 
-        private void handleAction(Player p, ChestView currentView, ViewAction action) {
+        private void handleAction(Player p, ViewHolder holder, ViewAction action) {
+            ChestView currentView = holder.getView();
             if (action instanceof ViewAction.Open) {
                 ViewAction.Open open = (ViewAction.Open) action;
-                Bukkit.getScheduler().runTask(plugin, () -> openView(open.getView(), p, plugin));
+                runSync(() -> openView(open.getView(), p, plugin));
             } else if (action instanceof ViewAction.Reopen) {
-                Bukkit.getScheduler().runTask(plugin, () -> openView(currentView, p, plugin));
+                runSync(() -> openView(currentView, p, plugin));
             } else if (action instanceof ViewAction.Close) {
-                Bukkit.getScheduler().runTask(plugin, p::closeInventory);
+                runSync(p::closeInventory);
             } else if (action instanceof ViewAction.OpenAsync) {
                 ViewAction.OpenAsync openAsync = ((ViewAction.OpenAsync) action);
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+                runAsync(() -> {
                     try {
                         ChestView chestView = openAsync.getViewFuture().get(30, TimeUnit.SECONDS);
-                        Bukkit.getScheduler().runTask(plugin, () -> openView(chestView, p, plugin));
-                    } catch (InterruptedException | ExecutionException | TimeoutException ex) {
-                        plugin.getLogger().log(Level.WARNING, ex, () -> "Error while waiting to get a chest view.");
+                        runSync(() -> handleAction(p, holder, new ViewAction.Open(chestView)));
+                    } catch (Exception ex) {
+                        plugin.getLogger().log(Level.WARNING, ex, () -> "Error while getting a view to open.");
+                    }
+                });
+            } else if (action instanceof ViewAction.Update) {
+                ViewAction.Update update = (ViewAction.Update) action;
+                runSync(() -> {
+                    giveBackContents(currentView, p);
+                    ChestView newView = update.getView();
+                    holder.setView(newView);
+                    updateInventory(newView, holder.getInventory());
+                });
+            } else if (action instanceof ViewAction.UpdateAsync) {
+                ViewAction.UpdateAsync updateAsync = (ViewAction.UpdateAsync) action;
+                runAsync(() -> {
+                    try {
+                        ChestView chestView = updateAsync.getViewFuture().get(30, TimeUnit.SECONDS);
+                        runSync(() -> handleAction(p, holder, new ViewAction.Update(chestView)));
+                    } catch (Exception ex) {
+                        plugin.getLogger().log(Level.WARNING, ex, () -> "Error while getting a view to update.");
                     }
                 });
             }
         }
 
-        private void runTask(Runnable runnable) {
+        private static void updateView(Inventory inv, ChestView view) {
+            ItemStack[] contents = inv.getContents();
+            for (int i = 0; i < contents.length; i++) {
+                ItemStack item = contents[i];
+                if (item != null && item.getType() != Material.AIR &&
+                        !view.getControls().containsKey(i)) {
+                    view.getContents().put(i, item);
+                } else {
+                    view.getContents().remove(i);
+                }
+            }
+        }
+
+        private static void giveBackContents(ChestView view, Player p) {
+            ItemStack[] items = view.getContents().values().stream()
+                    .filter(item -> item != null && item.getType() != Material.AIR)
+                    .toArray(ItemStack[]::new);
+            HashMap<Integer, ItemStack> failures = p.getInventory().addItem(items);
+            for (ItemStack item : failures.values()) {
+                p.getWorld().dropItem(p.getEyeLocation(), item);
+            }
+            view.getContents().clear();
+        }
+
+        private void runSync(Runnable runnable) {
             Bukkit.getScheduler().runTask(plugin, runnable);
+        }
+
+        private void runAsync(Runnable runnable) {
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, runnable);
         }
     }
 }

@@ -6,23 +6,22 @@ import io.typecraft.bukkit.view.ViewAction;
 import io.typecraft.bukkit.view.ViewItem;
 import io.typecraft.bukkit.view.page.PageContext;
 import io.typecraft.bukkit.view.page.PageViewLayout;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ViewPlugin extends JavaPlugin {
     @Override
@@ -74,23 +73,14 @@ public class ViewPlugin extends JavaPlugin {
     }
 
     private static PageViewLayout createMyViewLayout(String title) {
-        List<Function<PageContext, ViewItem>> pagingContents = Bukkit.getOnlinePlayers().stream()
-                .map(p -> (Function<PageContext, ViewItem>) ctx -> {
-                    ItemStack headItem = new ItemStack(Material.PLAYER_HEAD);
-                    SkullMeta meta = (SkullMeta) headItem.getItemMeta();
-                    if (meta != null) {
-                        meta.setOwningPlayer(p);
-                        headItem.setItemMeta(meta);
-                    }
-                    return ViewItem.of(headItem, e -> {
+        List<Function<PageContext, ViewItem>> pagingContents = Arrays.stream(Material.values())
+                .filter(mat -> mat.isItem() && !mat.isAir())
+                .map(material -> (Function<PageContext, ViewItem>) ctx -> {
+                    ItemStack item = new ItemStack(material);
+                    return ViewItem.of(item, e -> {
                         Player clicker = e.getClicker();
-                        if (!p.isOnline()) {
-                            clicker.sendMessage(ChatColor.RED + "Player '" + p.getName() + "' not in online!");
-                        } else if (clicker.isOp()) {
-                            clicker.teleport(p.getLocation());
-                            return ViewAction.CLOSE;
-                        } else {
-                            clicker.sendMessage(ChatColor.RED + "You are not a op!");
+                        if (clicker.isOp()) {
+                            clicker.getInventory().addItem(new ItemStack(material));
                         }
                         return ViewAction.NOTHING;
                     });

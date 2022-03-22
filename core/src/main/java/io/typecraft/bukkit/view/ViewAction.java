@@ -31,6 +31,16 @@ public interface ViewAction {
     }
 
     @Data
+    class Update implements ViewAction {
+        private final ChestView view;
+    }
+
+    @Data
+    class UpdateAsync implements ViewAction {
+        private final Future<ChestView> viewFuture;
+    }
+
+    @Data
     class Close implements ViewAction {
         private Close() {
         }
