@@ -23,7 +23,6 @@ public class ItemListView {
     public static PageViewLayout createLayout(Stream<Material> materials) {
         List<Function<PageContext, ViewControl>> pagingContents =
             materials
-                .filter(mat -> mat.isItem() && !mat.isAir())
                 .map(material ->
                     // Why `Function<PageContext, ViewControl` not just `ViewControl`?
                     // Because of laziness to avoid lag from immediate calculation the all page items.
