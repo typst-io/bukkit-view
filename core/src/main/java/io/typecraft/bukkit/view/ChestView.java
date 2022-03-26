@@ -15,8 +15,9 @@ public class ChestView {
 
     /**
      * A simple constructor of ChestView
-     * @param title the inventory title
-     * @param row the inventory row
+     *
+     * @param title    the inventory title
+     * @param row      the inventory row
      * @param contents the inventory contents
      * @return ChestView
      */

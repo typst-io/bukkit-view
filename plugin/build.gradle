@@ -24,7 +24,7 @@ dependencies {
 spigot {
     name = 'BukkitView'
     commands {
-        create ('bukkitview') {
+        create('bukkitview') {
             aliases = ['view']
         }
     }

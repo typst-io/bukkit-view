@@ -32,16 +32,16 @@ public class PageViewLayout {
         List<Integer> slots = IntStream.range(0, cSize).boxed().collect(Collectors.toList());
         Map<Integer, Function<PageContext, PageViewControl>> controls = new HashMap<>();
         controls.put(cSize + 3, ctx -> PageViewControl.of(
-                createItemStack(buttonMaterial, ctx.getPage(), String.format(
-                        "<- %s/%s", ctx.getPage(), ctx.getMaxPage()
-                )),
-                e -> new PageViewAction.SetPage(ctx.getPage() - 1)
+            createItemStack(buttonMaterial, ctx.getPage(), String.format(
+                "<- %s/%s", ctx.getPage(), ctx.getMaxPage()
+            )),
+            e -> new PageViewAction.SetPage(ctx.getPage() - 1)
         ));
         controls.put(cSize + 5, ctx -> PageViewControl.of(
-                createItemStack(buttonMaterial, ctx.getPage(), String.format(
-                        "%s/%s ->", ctx.getPage(), ctx.getMaxPage()
-                )),
-                e -> new PageViewAction.SetPage(ctx.getPage() + 1)
+            createItemStack(buttonMaterial, ctx.getPage(), String.format(
+                "%s/%s ->", ctx.getPage(), ctx.getMaxPage()
+            )),
+            e -> new PageViewAction.SetPage(ctx.getPage() + 1)
         ));
         return of(title, row, elements, slots, controls);
     }
@@ -63,20 +63,20 @@ public class PageViewLayout {
         for (Map.Entry<Integer, Function<PageContext, PageViewControl>> pair : getControls().entrySet()) {
             PageViewControl control = pair.getValue().apply(ctx);
             viewControls.put(pair.getKey(), ViewControl.of(
-                    control.getItem(),
-                    event -> {
-                        PageViewAction action = control.getOnClick().apply(event);
-                        if (action instanceof PageViewAction.Prime) {
-                            PageViewAction.Prime prime = ((PageViewAction.Prime) action);
-                            return prime.getAction();
-                        } else if (action instanceof PageViewAction.SetPage) {
-                            PageViewAction.SetPage setPage = (PageViewAction.SetPage) action;
-                            ChestView newView = toView(setPage.getPage());
-                            return new ViewAction.Update(newView.getContents());
-                        } else {
-                            return ViewAction.NOTHING;
-                        }
+                control.getItem(),
+                event -> {
+                    PageViewAction action = control.getOnClick().apply(event);
+                    if (action instanceof PageViewAction.Prime) {
+                        PageViewAction.Prime prime = ((PageViewAction.Prime) action);
+                        return prime.getAction();
+                    } else if (action instanceof PageViewAction.SetPage) {
+                        PageViewAction.SetPage setPage = (PageViewAction.SetPage) action;
+                        ChestView newView = toView(setPage.getPage());
+                        return new ViewAction.Update(newView.getContents());
+                    } else {
+                        return ViewAction.NOTHING;
                     }
+                }
             ));
         }
         ViewContents contents = ViewContents.ofControls(viewControls);
@@ -87,10 +87,10 @@ public class PageViewLayout {
         int start = (page - 1) * elementSize;
         int end = page * elementSize;
         return list.isEmpty()
-                ? Collections.emptyList()
-                : list.subList(
-                Math.min(Math.max(start, 0), list.size()),
-                Math.min(Math.max(end, 0), list.size()));
+            ? Collections.emptyList()
+            : list.subList(
+            Math.min(Math.max(start, 0), list.size()),
+            Math.min(Math.max(end, 0), list.size()));
     }
 
     private static ItemStack createItemStack(Material mat, int amount, String display) {

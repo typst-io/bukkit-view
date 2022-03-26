@@ -100,8 +100,10 @@ public class BukkitView {
                 return;
             }
             ChestView view = holder.getView();
-            if (e.getRawSlots().stream()
-                    .anyMatch(a -> view.getContents().getControls().get(a) != null)) {
+            if (
+                e.getRawSlots().stream()
+                    .anyMatch(a -> view.getContents().getControls().get(a) != null)
+            ) {
                 e.setCancelled(true);
             }
             // Update view
@@ -173,8 +175,10 @@ public class BukkitView {
             ItemStack[] contents = inv.getContents();
             for (int i = 0; i < contents.length; i++) {
                 ItemStack item = contents[i];
-                if (item != null && item.getType() != Material.AIR &&
-                        !view.getContents().getControls().containsKey(i)) {
+                if (
+                    item != null && item.getType() != Material.AIR &&
+                        !view.getContents().getControls().containsKey(i)
+                ) {
                     view.getContents().getItems().put(i, item);
                 } else {
                     view.getContents().getItems().remove(i);
@@ -184,8 +188,8 @@ public class BukkitView {
 
         private static void giveBackContents(ChestView view, Player p) {
             ItemStack[] items = view.getContents().getItems().values().stream()
-                    .filter(item -> item != null && item.getType() != Material.AIR)
-                    .toArray(ItemStack[]::new);
+                .filter(item -> item != null && item.getType() != Material.AIR)
+                .toArray(ItemStack[]::new);
             HashMap<Integer, ItemStack> failures = p.getInventory().addItem(items);
             for (ItemStack item : failures.values()) {
                 p.getWorld().dropItem(p.getEyeLocation(), item);

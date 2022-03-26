@@ -75,6 +75,7 @@ BukkitView.openView(view, player, plugin);
 ```
 
 To open asynchronously, `ViewAction.OpenAsync(Future<View>)`:
+
 ```java
 ViewControl.of(
     bukkitItemStack,
@@ -96,6 +97,7 @@ ViewControl.of(
 ```
 
 On close the view:
+
 ```java
 ChestView.of(title, row, map, closeEvent -> {
     return ViewAction.NOTHING; // or ViewAction.REOPEN
