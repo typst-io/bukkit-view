@@ -23,6 +23,10 @@ public class BukkitItem {
         return of(material, 1, (short) 0, "", Collections.emptyList());
     }
 
+    public static BukkitItem ofSimple(Material material, String name) {
+        return of(material, 1, (short) 0, name, Collections.emptyList());
+    }
+
     public static BukkitItem ofSimple(Material material, String name, List<String> lores) {
         return of(material, 1, (short) 0, name, lores);
     }
