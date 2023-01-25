@@ -23,8 +23,12 @@ public class BukkitItem {
         return of(material, 1, (short) 0, "", Collections.emptyList());
     }
 
+    public static BukkitItem ofSimple(Material material, String name, List<String> lores) {
+        return of(material, 1, (short) 0, name, lores);
+    }
+
     @SuppressWarnings("deprecation")
-    public void update(ItemStack x) {
+    public ItemStack update(ItemStack x) {
         // header
         x.setAmount(getAmount());
         x.setDurability(getDurability());
@@ -39,11 +43,11 @@ public class BukkitItem {
         if (meta != null) {
             x.setItemMeta(meta);
         }
+
+        return x;
     }
 
     public ItemStack build() {
-        ItemStack item = new ItemStack(material);
-        update(item);
-        return item;
+        return update(new ItemStack(material));
     }
 }
