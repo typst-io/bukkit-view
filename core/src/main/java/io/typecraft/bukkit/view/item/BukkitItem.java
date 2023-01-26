@@ -32,7 +32,7 @@ public class BukkitItem {
     }
 
     @SuppressWarnings("deprecation")
-    public ItemStack update(ItemStack x) {
+    public void update(ItemStack x) {
         // header
         x.setAmount(getAmount());
         x.setDurability(getDurability());
@@ -48,10 +48,11 @@ public class BukkitItem {
             x.setItemMeta(meta);
         }
 
-        return x;
     }
 
     public ItemStack build() {
-        return update(new ItemStack(material));
+        ItemStack item = new ItemStack(material);
+        update(item);
+        return item;
     }
 }
