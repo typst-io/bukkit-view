@@ -17,11 +17,11 @@ public class BukkitItem {
     private final int amount;
     private final short durability;
     private final String name;
-    private final Integer ModelData;
     private final List<String> lore;
+    private final Integer modelData;
 
     public static BukkitItem ofJust(Material material) {
-        return of(material, 1, (short) 0, "", 0, Collections.emptyList());
+        return of(material, 1, (short) 0, "",  Collections.emptyList(), 0);
     }
 
     @SuppressWarnings("deprecation")
@@ -31,16 +31,16 @@ public class BukkitItem {
         x.setDurability(getDurability());
         // meta
         ItemMeta meta = x.getItemMeta();
-        if (meta != null && !getName().isEmpty()) {
-            meta.setDisplayName(getName());
-        }
-        if (meta != null && !getLore().isEmpty()) {
-            meta.setLore(new ArrayList<>(getLore()));
-        }
-        if (meta != null && getModelData() != 0) {
-            meta.setCustomModelData(getModelData());
-        }
         if (meta != null) {
+            if (!getName().isEmpty()) {
+                meta.setDisplayName(getName());
+            }
+            if (!getLore().isEmpty()) {
+                meta.setLore(new ArrayList<>(getLore()));
+            }
+            if (getModelData() != 0) {
+                meta.setCustomModelData(getModelData());
+            }
             x.setItemMeta(meta);
         }
     }

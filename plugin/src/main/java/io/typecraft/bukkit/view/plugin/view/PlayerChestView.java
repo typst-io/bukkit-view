@@ -7,9 +7,7 @@ import io.typecraft.bukkit.view.ViewControl;
 import io.typecraft.bukkit.view.item.BukkitItem;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,23 +21,13 @@ public class PlayerChestView {
         }
         // exit at 8 slot
         ViewControl exit = ViewControl.of(
-            createItemStack(Material.BARRIER, "§cEXIT"),
+            BukkitItem.ofJust(Material.BARRIER)
+                .withName("§cEXIT")
+                .build(),
             e -> ViewAction.CLOSE
         );
         controls.put(8, exit);
 
         return ChestView.just("Chest", 6, ViewContents.ofControls(controls));
-    }
-
-    private static ItemStack createItemStack(Material material, String name) {
-        ItemStack item = new ItemStack(material);
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            if (!name.isEmpty()) {
-                meta.setDisplayName(name);
-            }
-            item.setItemMeta(meta);
-        }
-        return item;
     }
 }
