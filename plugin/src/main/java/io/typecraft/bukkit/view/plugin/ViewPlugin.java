@@ -36,7 +36,7 @@ public class ViewPlugin extends JavaPlugin {
             }
             case "chest": {
                 if (p != null && p.isOp()) {
-                    ChestView view = PlayerChestView.create();
+                    ChestView view = PlayerChestView.main(p);
                     BukkitView.openView(view, p, this);
                 }
                 break;
