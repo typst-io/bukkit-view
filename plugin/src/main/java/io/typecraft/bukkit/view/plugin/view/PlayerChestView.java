@@ -4,10 +4,12 @@ import io.typecraft.bukkit.view.ChestView;
 import io.typecraft.bukkit.view.ViewAction;
 import io.typecraft.bukkit.view.ViewContents;
 import io.typecraft.bukkit.view.ViewControl;
+import io.typecraft.bukkit.view.item.BukkitItem;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 

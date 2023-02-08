@@ -4,6 +4,7 @@ import io.typecraft.bukkit.view.ChestView;
 import io.typecraft.bukkit.view.ViewAction;
 import io.typecraft.bukkit.view.ViewContents;
 import io.typecraft.bukkit.view.ViewControl;
+import io.typecraft.bukkit.view.item.BukkitItem;
 import lombok.Data;
 import lombok.With;
 import org.bukkit.Material;
@@ -32,15 +33,21 @@ public class PageViewLayout {
         List<Integer> slots = IntStream.range(0, cSize).boxed().collect(Collectors.toList());
         Map<Integer, Function<PageContext, PageViewControl>> controls = new HashMap<>();
         controls.put(cSize + 3, ctx -> PageViewControl.of(
-            createItemStack(buttonMaterial, ctx.getPage(), String.format(
-                "<- %s/%s", ctx.getPage(), ctx.getMaxPage()
-            )),
+            BukkitItem.ofJust(buttonMaterial)
+                .withAmount(Math.max(1, ctx.getPage()))
+                .withName(String.format(
+                    "<- %s/%s", ctx.getPage(), ctx.getMaxPage()
+                ))
+                .build(),
             e -> new PageViewAction.SetPage(ctx.getPage() - 1)
         ));
         controls.put(cSize + 5, ctx -> PageViewControl.of(
-            createItemStack(buttonMaterial, ctx.getPage(), String.format(
-                "%s/%s ->", ctx.getPage(), ctx.getMaxPage()
-            )),
+            BukkitItem.ofJust(buttonMaterial)
+                .withAmount(Math.max(1, ctx.getPage()))
+                .withName(String.format(
+                    "%s/%s ->", ctx.getPage(), ctx.getMaxPage()
+                ))
+                .build(),
             e -> new PageViewAction.SetPage(ctx.getPage() + 1)
         ));
         return of(title, row, elements, slots, controls);
@@ -93,14 +100,4 @@ public class PageViewLayout {
             Math.min(Math.max(end, 0), list.size()));
     }
 
-    private static ItemStack createItemStack(Material mat, int amount, String display) {
-        ItemStack item = new ItemStack(mat);
-        ItemMeta meta = item.getItemMeta();
-        if (meta != null) {
-            meta.setDisplayName(display);
-            item.setItemMeta(meta);
-        }
-        item.setAmount(Math.max(1, amount));
-        return item;
-    }
 }
