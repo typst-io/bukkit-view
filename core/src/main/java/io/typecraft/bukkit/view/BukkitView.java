@@ -86,6 +86,10 @@ public class BukkitView {
                 } catch (Exception ex) {
                     plugin.getLogger().log(Level.WARNING, ex, () -> "Error on inventory click!");
                 }
+                if (action instanceof ViewAction.Open) {
+                    ChestView chestView = view.withState(action);
+                    ((ViewHolder) e.getView().getTopInventory().getHolder()).setView(chestView);
+                }
                 handleAction(p, holder, action);
             }
             // Update view
@@ -119,8 +123,11 @@ public class BukkitView {
             }
             ChestView view = holder.getView();
             Player p = (Player) e.getPlayer();
-            ViewAction action = ViewAction.NOTHING;
+            ViewAction action = view.getState();
             try {
+                if (!(action instanceof ViewAction.Open)) {
+                    return;
+                }
                 action = view.getOnClose().apply(new CloseEvent(view, p));
             } catch (Exception ex) {
                 plugin.getLogger().log(Level.WARNING, ex, () -> "Error on inventory close!");
