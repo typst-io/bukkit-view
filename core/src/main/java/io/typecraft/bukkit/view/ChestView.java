@@ -10,7 +10,6 @@ import java.util.function.Function;
 public class ChestView {
     private final String title;
     private final int row;
-    private final ViewAction state;
     private final ViewContents contents;
     private final Function<CloseEvent, ViewAction> onClose;
 
@@ -23,6 +22,6 @@ public class ChestView {
      * @return ChestView
      */
     public static ChestView just(String title, int row, ViewContents contents) {
-        return new ChestView(title, row, ViewAction.NOTHING, contents, e -> ViewAction.NOTHING);
+        return new ChestView(title, row, contents, e -> ViewAction.NOTHING);
     }
 }
