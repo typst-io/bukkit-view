@@ -118,6 +118,9 @@ public class BukkitView {
                 return;
             }
             ChestView view = holder.getView();
+            if (view == null) {
+                return;
+            }
             Player p = (Player) e.getPlayer();
             ViewAction action = ViewAction.NOTHING;
             try {
@@ -134,6 +137,7 @@ public class BukkitView {
             ChestView currentView = holder.getView();
             if (action instanceof ViewAction.Open) {
                 ViewAction.Open open = (ViewAction.Open) action;
+                holder.setView(null);
                 runSync(() -> openView(open.getView(), p, plugin));
             } else if (action instanceof ViewAction.Reopen) {
                 runSync(() -> openView(currentView, p, plugin));
