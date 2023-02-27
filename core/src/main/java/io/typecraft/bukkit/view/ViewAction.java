@@ -19,6 +19,7 @@ public interface ViewAction {
         private final ChestView view;
     }
 
+    // TODO: remove?
     @Data
     class Reopen implements ViewAction {
         private Reopen() {

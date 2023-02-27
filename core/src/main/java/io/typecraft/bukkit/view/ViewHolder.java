@@ -3,6 +3,7 @@ package io.typecraft.bukkit.view;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 
 public class ViewHolder implements InventoryHolder {
     private final Plugin plugin;
@@ -22,6 +23,7 @@ public class ViewHolder implements InventoryHolder {
         this.inventory = inventory;
     }
 
+    @Nullable
     public ChestView getView() {
         return view;
     }

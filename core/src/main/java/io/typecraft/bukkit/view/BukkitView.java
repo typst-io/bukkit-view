@@ -64,6 +64,9 @@ public class BukkitView {
                 return;
             }
             ChestView view = holder.getView();
+            if (view == null) {
+                return;
+            }
             Player p = (Player) e.getWhoClicked();
             ViewControl viewControl = view.getContents().getControls().get(e.getRawSlot());
             // Cancel
@@ -100,6 +103,9 @@ public class BukkitView {
                 return;
             }
             ChestView view = holder.getView();
+            if (view == null) {
+                return;
+            }
             if (
                 e.getRawSlots().stream()
                     .anyMatch(a -> view.getContents().getControls().get(a) != null)
@@ -135,6 +141,9 @@ public class BukkitView {
 
         private void handleAction(Player p, ViewHolder holder, ViewAction action) {
             ChestView currentView = holder.getView();
+            if (currentView == null) {
+                return;
+            }
             if (action instanceof ViewAction.Open) {
                 ViewAction.Open open = (ViewAction.Open) action;
                 holder.setView(null);
