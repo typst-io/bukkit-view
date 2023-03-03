@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.typecraft:bukkit-view-core:4.2.1")
+    implementation("io.typecraft:bukkit-view-core:5.0.0")
 }
 ```
 
@@ -29,7 +29,7 @@ dependencies {
     <dependency>
         <groupId>io.typecraft</groupId>
         <artifactId>bukkit-view-core</artifactId>
-        <version>4.2.1</version>
+        <version>5.0.0</version>
     </dependency>
 </dependencies>
 ```
@@ -127,7 +127,7 @@ List<Function<PageContext, ViewControl>> items = ...;
 // Paging elements will be put in this slots.
 List<Integer> slots = ...;
 // Control means fixed view-item, won't affected by view paging.
-Map<Integer, Function<PageContext, PageViewControl>> controls = ...;
+Map<Integer, Function<PageContext, ViewControl>> controls = ...;
 String title = "title";
 int row = 6;
 PageViewLayout layout = PageViewLayout.of(title, row, items, slots, controls);

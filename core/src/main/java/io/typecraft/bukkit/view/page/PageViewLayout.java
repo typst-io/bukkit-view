@@ -8,8 +8,6 @@ import io.typecraft.bukkit.view.item.BukkitItem;
 import lombok.Data;
 import lombok.With;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -26,29 +24,29 @@ public class PageViewLayout {
     private final int row;
     private final List<Function<PageContext, ViewControl>> elements;
     private final List<Integer> slots;
-    private final Map<Integer, Function<PageContext, PageViewControl>> controls;
+    private final Map<Integer, Function<PageContext, ViewControl>> controls;
 
     public static PageViewLayout ofDefault(String title, int row, Material buttonMaterial, List<Function<PageContext, ViewControl>> elements) {
         int cSize = (row - 1) * 9;
         List<Integer> slots = IntStream.range(0, cSize).boxed().collect(Collectors.toList());
-        Map<Integer, Function<PageContext, PageViewControl>> controls = new HashMap<>();
-        controls.put(cSize + 3, ctx -> PageViewControl.of(
+        Map<Integer, Function<PageContext, ViewControl>> controls = new HashMap<>();
+        controls.put(cSize + 3, ctx -> ViewControl.of(
             BukkitItem.ofJust(buttonMaterial)
                 .withAmount(Math.max(1, ctx.getPage()))
                 .withName(String.format(
                     "<- %s/%s", ctx.getPage(), ctx.getMaxPage()
                 ))
                 .build(),
-            e -> new PageViewAction.SetPage(ctx.getPage() - 1)
+            e -> new ViewAction.Update(ctx.getLayout().toView(ctx.getPage() - 1).getContents())
         ));
-        controls.put(cSize + 5, ctx -> PageViewControl.of(
+        controls.put(cSize + 5, ctx -> ViewControl.of(
             BukkitItem.ofJust(buttonMaterial)
                 .withAmount(Math.max(1, ctx.getPage()))
                 .withName(String.format(
                     "%s/%s ->", ctx.getPage(), ctx.getMaxPage()
                 ))
                 .build(),
-            e -> new PageViewAction.SetPage(ctx.getPage() + 1)
+            e -> new ViewAction.Update(ctx.getLayout().toView(ctx.getPage() + 1).getContents())
         ));
         return of(title, row, elements, slots, controls);
     }
@@ -59,7 +57,7 @@ public class PageViewLayout {
         int count = getElements().size();
         int maxPage = count / contentSize + Math.min(count % contentSize, 1);
         int coercedPage = Math.max(Math.min(page, maxPage), 1);
-        PageContext ctx = PageContext.of(maxPage, coercedPage);
+        PageContext ctx = PageContext.of(this, maxPage, coercedPage);
         List<Function<PageContext, ViewControl>> subItemList = pagingList(contentSize, coercedPage, getElements());
         // Contents
         for (int i = 0; i < subItemList.size(); i++) {
@@ -67,24 +65,9 @@ public class PageViewLayout {
             viewControls.put(slot, subItemList.get(i).apply(ctx));
         }
         // Controls
-        for (Map.Entry<Integer, Function<PageContext, PageViewControl>> pair : getControls().entrySet()) {
-            PageViewControl control = pair.getValue().apply(ctx);
-            viewControls.put(pair.getKey(), ViewControl.of(
-                control.getItem(),
-                event -> {
-                    PageViewAction action = control.getOnClick().apply(event);
-                    if (action instanceof PageViewAction.Prime) {
-                        PageViewAction.Prime prime = ((PageViewAction.Prime) action);
-                        return prime.getAction();
-                    } else if (action instanceof PageViewAction.SetPage) {
-                        PageViewAction.SetPage setPage = (PageViewAction.SetPage) action;
-                        ChestView newView = toView(setPage.getPage());
-                        return new ViewAction.Update(newView.getContents());
-                    } else {
-                        return ViewAction.NOTHING;
-                    }
-                }
-            ));
+        for (Map.Entry<Integer, Function<PageContext, ViewControl>> pair : getControls().entrySet()) {
+            ViewControl control = pair.getValue().apply(ctx);
+            viewControls.put(pair.getKey(), control);
         }
         ViewContents contents = ViewContents.ofControls(viewControls);
         return ChestView.just(getTitle(), getRow(), contents);
@@ -99,5 +82,4 @@ public class PageViewLayout {
             Math.min(Math.max(start, 0), list.size()),
             Math.min(Math.max(end, 0), list.size()));
     }
-
 }

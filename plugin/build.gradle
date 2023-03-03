@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'io.typecraft'
-version '0.5.1'
+version '5.0.0'
 
 repositories {
     mavenCentral()

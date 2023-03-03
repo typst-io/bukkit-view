@@ -6,6 +6,7 @@ import lombok.With;
 @Data(staticConstructor = "of")
 @With
 public class PageContext {
+    private final PageViewLayout layout;
     private final int maxPage;
     private final int page;
 
