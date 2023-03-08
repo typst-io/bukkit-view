@@ -24,6 +24,19 @@ public class BukkitItem {
         return of(material, 1, (short) 0, "", Collections.emptyList(), 0, Collections.emptyMap());
     }
 
+    public static BukkitItem from(ItemStack item) {
+        ItemMeta meta = item.getItemMeta();
+        return of(
+            item.getType(),
+            item.getAmount(),
+            item.getDurability(),
+            meta != null && meta.hasDisplayName() ? meta.getDisplayName() : "",
+            meta != null && meta.hasLore() ? meta.getLore() : Collections.emptyList(),
+            meta != null && meta.hasCustomModelData() ? meta.getCustomModelData() : 0,
+            meta != null && meta.hasEnchants() ? meta.getEnchants() : Collections.emptyMap()
+        );
+    }
+
     public BukkitItem withEnchant(Enchantment enchant, int level) {
         Map<Enchantment, Integer> enchants = this.enchants.isEmpty() ? new HashMap<>() : this.enchants;
         enchants.put(enchant, level);
@@ -51,10 +64,10 @@ public class BukkitItem {
             if (getModelData() != 0) {
                 meta.setCustomModelData(getModelData());
             }
-            for (Map.Entry<Enchantment, Integer> pair : getEnchants().entrySet()) {
-                meta.addEnchant(pair.getKey(), pair.getValue(), true);
-            }
             x.setItemMeta(meta);
+        }
+        for (Map.Entry<Enchantment, Integer> pair : getEnchants().entrySet()) {
+            x.addEnchantment(pair.getKey(), pair.getValue());
         }
     }
 

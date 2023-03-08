@@ -65,6 +65,7 @@ public class BukkitView {
             }
             ChestView view = holder.getView();
             if (view == null) {
+                e.setCancelled(true);
                 return;
             }
             Player p = (Player) e.getWhoClicked();
@@ -104,6 +105,7 @@ public class BukkitView {
             }
             ChestView view = holder.getView();
             if (view == null) {
+                e.setCancelled(true);
                 return;
             }
             if (
