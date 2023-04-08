@@ -67,7 +67,7 @@ public class BukkitItem {
             x.setItemMeta(meta);
         }
         for (Map.Entry<Enchantment, Integer> pair : getEnchants().entrySet()) {
-            x.addEnchantment(pair.getKey(), pair.getValue());
+            x.addUnsafeEnchantment(pair.getKey(), pair.getValue());
         }
     }
 
