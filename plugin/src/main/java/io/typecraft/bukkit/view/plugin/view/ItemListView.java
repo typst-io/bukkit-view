@@ -28,7 +28,7 @@ public class ItemListView {
                     // Because of laziness to avoid lag from immediate calculation the all page items.
                     (Function<PageContext, ViewControl>) ctx ->
                         ViewControl.of(
-                            createDisplayItem(material),
+                            e -> createDisplayItem(material),
                             e -> onClick(e, material)
                         )
                 )

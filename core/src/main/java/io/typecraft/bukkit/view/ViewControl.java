@@ -10,7 +10,7 @@ import java.util.function.Function;
 @Data(staticConstructor = "of")
 @With
 public class ViewControl {
-    private final ItemStack item;
+    private final Function<OpenEvent, ItemStack> item;
     private final Function<ClickEvent, ViewAction> onClick;
 
     public static ViewControl just(ItemStack item) {
@@ -24,7 +24,11 @@ public class ViewControl {
         });
     }
 
-    public ItemStack getItem() {
-        return new ItemStack(item);
+    public static ViewControl of(ItemStack item, Function<ClickEvent, ViewAction> onClick) {
+        return of(e -> item, onClick);
+    }
+
+    public ItemStack getItem(OpenEvent event) {
+        return item.apply(event);
     }
 }

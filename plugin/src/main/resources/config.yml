@@ -1,0 +1,21 @@
+warp:
+  row: 1
+  contents:
+    4:
+      item:
+        type: STEAK
+        name: '순한맛 야생서버'
+        lore:
+          - '동접: %players-soft%/%max-players-soft%'
+      commands:
+        - '@Message|%player%|순한맛 야생 서버로 이동합니다..'
+        - '@Connect|softsurvival'
+    5:
+      item:
+        type: DIAMOND_SWORD
+        name: '매운맛 야생서버'
+        lore:
+          - '동접: %players-hard%/%max-players-hard%'
+      commands:
+        - '@Message|%player%|매운맛 야생 서버로 이동합니다..'
+        - '@Connect|hardsurvival'

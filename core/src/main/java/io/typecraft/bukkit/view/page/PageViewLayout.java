@@ -31,7 +31,7 @@ public class PageViewLayout {
         List<Integer> slots = IntStream.range(0, cSize).boxed().collect(Collectors.toList());
         Map<Integer, Function<PageContext, ViewControl>> controls = new HashMap<>();
         controls.put(cSize + 3, ctx -> ViewControl.of(
-            BukkitItem.ofJust(buttonMaterial)
+            e -> BukkitItem.ofJust(buttonMaterial)
                 .withAmount(Math.max(1, ctx.getPage()))
                 .withName(String.format(
                     "<- %s/%s", ctx.getPage(), ctx.getMaxPage()
@@ -40,7 +40,7 @@ public class PageViewLayout {
             e -> new ViewAction.Update(ctx.getLayout().toView(ctx.getPage() - 1).getContents())
         ));
         controls.put(cSize + 5, ctx -> ViewControl.of(
-            BukkitItem.ofJust(buttonMaterial)
+            e -> BukkitItem.ofJust(buttonMaterial)
                 .withAmount(Math.max(1, ctx.getPage()))
                 .withName(String.format(
                     "%s/%s ->", ctx.getPage(), ctx.getMaxPage()

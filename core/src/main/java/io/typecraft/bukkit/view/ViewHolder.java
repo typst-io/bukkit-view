@@ -8,10 +8,19 @@ import org.jetbrains.annotations.Nullable;
 public class ViewHolder implements InventoryHolder {
     private final Plugin plugin;
     private ChestView view;
-    private Inventory inventory;
+    private Inventory inventory = null;
 
     public ViewHolder(Plugin plugin) {
         this.plugin = plugin;
+    }
+
+    void updateViewContents() {
+        ChestView view = getView();
+        Inventory inv = getInventory();
+        if (view == null) {
+            return;
+        }
+        setView(this.view.withContents(this.view.getContents().updated(inv)));
     }
 
     @Override

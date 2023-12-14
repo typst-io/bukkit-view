@@ -18,7 +18,7 @@ public class PlayerChestView {
         setupLayout(controls);
         // show player armor contents at 19 slot
         ViewControl equip = ViewControl.of(
-            BukkitItem.ofJust(Material.IRON_CHESTPLATE)
+            e -> BukkitItem.ofJust(Material.IRON_CHESTPLATE)
                 .withName(String.format("Show %s's equipments.", p.getName()))
                 .build(),
             e -> new ViewAction.Open(equip(p))
@@ -33,14 +33,14 @@ public class PlayerChestView {
         setupLayout(controls);
         // prev at 7 slot
         controls.put(7, ViewControl.of(
-            BukkitItem.ofJust(Material.COMPASS)
+            e -> BukkitItem.ofJust(Material.COMPASS)
                 .withName("Go to previous")
                 .build(),
             e -> new ViewAction.Open(main(p))
         ));
         // refresh at 6 slot
         controls.put(6, ViewControl.of(
-            BukkitItem.ofJust(Material.CLOCK)
+                e -> BukkitItem.ofJust(Material.CLOCK)
                 .withName("Refresh")
                 .build(),
             e -> new ViewAction.Open(equip(p))
@@ -62,7 +62,7 @@ public class PlayerChestView {
         }
         // exit at 8 slot
         ViewControl exit = ViewControl.of(
-            BukkitItem.ofJust(Material.BARRIER)
+                e -> BukkitItem.ofJust(Material.BARRIER)
                 .withName("§cEXIT")
                 .build(),
             e -> ViewAction.CLOSE
