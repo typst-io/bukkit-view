@@ -1,6 +1,8 @@
 package io.typecraft.bukkit.view;
 
 import lombok.Data;
+import lombok.Value;
+import lombok.With;
 
 import java.util.concurrent.Future;
 
@@ -15,7 +17,7 @@ public interface ViewAction {
     /**
      * {@link Close}
      */
-    Close CLOSE = new Close();
+    Close CLOSE = new Close(true);
     /**
      * {@link Reopen}
      */
@@ -42,6 +44,7 @@ public interface ViewAction {
     }
 
     // TODO: remove?
+
     /**
      * Open the current view as a new inventory.
      * This is equal to {@link Open} with the current view as a parameter.
@@ -85,9 +88,13 @@ public interface ViewAction {
      * This will cause InventoryCloseEvent.
      * The inputted items by player will be returned back.
      */
-    @Data
+    @Value
+    @With
     class Close implements ViewAction {
-        private Close() {
+        boolean giveBackItems;
+
+        public Close(boolean giveBackItems) {
+            this.giveBackItems = giveBackItems;
         }
     }
 }

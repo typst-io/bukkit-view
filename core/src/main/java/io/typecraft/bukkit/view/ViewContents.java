@@ -1,6 +1,7 @@
 package io.typecraft.bukkit.view;
 
 import lombok.Data;
+import lombok.Value;
 import lombok.With;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
@@ -10,17 +11,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-@Data(staticConstructor = "of")
+@Value(staticConstructor = "of")
 @With
 public class ViewContents {
     /**
      * Fixed, readonly slot controls.
      */
-    private final Map<Integer, ViewControl> controls;
+    Map<Integer, ViewControl> controls;
     /**
      * Player accessible slot items.
      */
-    private final Map<Integer, ItemStack> items;
+    Map<Integer, ItemStack> items;
 
     /**
      * Update the player accessible slots from the given inventory.

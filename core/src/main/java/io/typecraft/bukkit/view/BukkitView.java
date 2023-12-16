@@ -181,19 +181,24 @@ public class BukkitView {
             if (view == null) {
                 return;
             }
-            // update user input items
-            ChestView newView = view.withContents(view.getContents().updated(topInv));
-            holder.setView(newView);
             Player p = (Player) e.getPlayer();
             ViewAction action = ViewAction.NOTHING;
             try {
-                action = newView.getOnClose().apply(new CloseEvent(newView, p));
+                action = view.getOnClose().apply(new CloseEvent(view, p));
             } catch (Exception ex) {
                 plugin.getLogger().log(Level.WARNING, ex, () -> "Error on inventory close!");
             }
-            handleAction(p, holder, action);
+            boolean giveBackInputItems = true;
+            if (action instanceof ViewAction.Close) {
+                ViewAction.Close close = (ViewAction.Close) action;
+                giveBackInputItems = close.isGiveBackItems();
+            } else {
+                handleAction(p, holder, action);
+            }
             // give back the items
-            runSync(() -> giveBackContents(newView, p));
+            if (giveBackInputItems) {
+                runSync(() -> giveBackContents(view, p));
+            }
         }
 
         private void handleAction(Player p, ViewHolder holder, ViewAction action) {
