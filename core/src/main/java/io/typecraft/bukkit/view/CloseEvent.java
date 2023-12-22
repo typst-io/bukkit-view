@@ -7,6 +7,6 @@ import org.bukkit.entity.Player;
 @Data
 @With
 public class CloseEvent {
-    private final ChestView view;
     private final Player player;
+    private final ChestView view;
 }

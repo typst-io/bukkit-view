@@ -46,7 +46,7 @@ public class ItemListView {
     }
 
     private static ViewAction onClick(ClickEvent event, Material material) {
-        Player clicker = event.getClicker();
+        Player clicker = event.getPlayer();
         if (clicker.isOp()) {
             clicker.getInventory().addItem(new ItemStack(material));
         }

@@ -24,8 +24,10 @@ public class PlayerChestView {
             e -> new ViewAction.Open(equip(p))
         );
         controls.put(19, equip);
-
-        return ChestView.just("Chest", 6, ViewContents.ofControls(controls));
+        return ChestView.builder()
+                .title("Chest")
+                .contents(ViewContents.ofControls(controls))
+                .build();
     }
 
     public static ChestView equip(Player p) {
@@ -51,7 +53,10 @@ public class PlayerChestView {
             controls.put(9 + i, ViewControl.just(item));
             i++;
         }
-        return ChestView.just("Equip", 6, ViewContents.ofControls(controls));
+        return ChestView.builder()
+                .title("Equip")
+                .contents(ViewContents.ofControls(controls))
+                .build();
     }
 
     private static void setupLayout(Map<Integer, ViewControl> controls) {

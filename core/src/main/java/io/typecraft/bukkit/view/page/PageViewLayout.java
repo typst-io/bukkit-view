@@ -70,7 +70,11 @@ public class PageViewLayout {
             viewControls.put(pair.getKey(), control);
         }
         ViewContents contents = ViewContents.ofControls(viewControls);
-        return ChestView.just(getTitle(), getRow(), contents);
+        return ChestView.builder()
+                .title(title)
+                .row(row)
+                .contents(contents)
+                .build();
     }
 
     private static <T> List<T> pagingList(int elementSize, int page, List<T> list) {

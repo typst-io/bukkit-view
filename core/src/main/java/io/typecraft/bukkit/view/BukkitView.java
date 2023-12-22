@@ -14,10 +14,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -35,46 +32,31 @@ public class BukkitView {
         holder.setView(view);
         Inventory inv = Bukkit.createInventory(holder, view.getRow() * 9, view.getTitle());
         holder.setInventory(inv);
-        OpenEvent event = new OpenEvent(view, player);
+        OpenEvent event = new OpenEvent(player, view);
         updateInventory(view.getContents(), inv, event);
         player.openInventory(inv);
     }
 
     /**
-     * Update the inventory contents to the given contents of view.
+     * Update the inventory to the given items of view.
      * This won't cause InventoryCloseEvent and InventoryOpenEvent.
+     * If the new controls overwrite a player accessible slot, then the item will be returned back to player.
      *
-     * @return false if the title and size of inventory player seeing is different from the given view; true if success.
+     * @return false if the view can't be updated -- the title and size of inventory player seeing is different from the given view; true if success.
      */
-    public static boolean updateView(ChestView view, Player player) {
+    public static boolean updateView(ChestView newView, Player player) {
         Inventory topInv = player.getOpenInventory().getTopInventory();
         InventoryHolder holder = topInv.getHolder();
         String title = player.getOpenInventory().getTitle();
         int size = topInv.getSize();
-        if (holder instanceof ViewHolder && title.equals(view.getTitle()) && size == (view.getRow() * 9)) {
+        if (holder instanceof ViewHolder && title.equals(newView.getTitle()) && size == (newView.getRow() * 9)) {
             ViewHolder viewHolder = (ViewHolder) holder;
-            viewHolder.setView(view);
-            // TODO: Is this naming `OpenEvent` correct even for update?
-            updateInventory(view.getContents(), topInv, new OpenEvent(view, player));
+            // update contents
+            viewHolder.setView(newView);
+            updateInventory(newView.getContents(), topInv, new OpenEvent(player, newView));
             return true;
         }
         return false;
-    }
-
-    private static Optional<ViewHolder> getOpenedViewHolder(UUID playerId) {
-        Player p = Bukkit.getPlayer(playerId);
-        InventoryHolder holder = p != null ? p.getOpenInventory().getTopInventory().getHolder() : null;
-        return holder instanceof ViewHolder
-                ? Optional.of((ViewHolder) holder)
-                : Optional.empty();
-    }
-
-    /**
-     * Get an opened view from the given player id.
-     */
-    public static Optional<ChestView> getOpenedView(UUID playerId) {
-        return getOpenedViewHolder(playerId)
-                .flatMap(holder -> Optional.ofNullable(holder.getView()));
     }
 
     private static void updateInventory(ViewContents contents, Inventory inv, OpenEvent event) {
@@ -108,6 +90,7 @@ public class BukkitView {
                 return;
             }
             Inventory topInv = e.getView().getTopInventory();
+            Inventory bottomInv = e.getView().getBottomInventory();
             ViewHolder holder = topInv.getHolder() instanceof ViewHolder ? ((ViewHolder) topInv.getHolder()) : null;
             if (holder == null || !holder.getPlugin().getName().equals(plugin.getName())) {
                 return;
@@ -128,6 +111,53 @@ public class BukkitView {
                         e.setCancelled(true);
                     }
                     break;
+                case SHIFT_LEFT:
+                    Inventory clickedInv = e.getClickedInventory();
+                    if (clickedInv == null) {
+                        break;
+                    }
+                    if (viewControl != null) {
+                        e.setCancelled(true);
+                    }
+                    Inventory targetInventory = e.getView().getTopInventory().equals(clickedInv)
+                            ? bottomInv
+                            : e.getView().getTopInventory();
+                    int targetSlot = targetInventory.firstEmpty();
+                    if (clickedInv.equals(bottomInv) && view.getContents().getControls().containsKey(targetSlot)) {
+                        e.setCancelled(true);
+                    }
+                    List<Integer> overwrittenSlots = view.getOverwriteMoveToOtherInventorySlots();
+                    if (clickedInv.equals(bottomInv) && !overwrittenSlots.isEmpty()) {
+                        ItemStack item = e.getCurrentItem();
+                        if (item == null || item.getType() == Material.AIR) {
+                            return;
+                        }
+                        int targetEmptySlot = view.findFirstSpace(overwrittenSlots, item);
+                        if (targetEmptySlot >= 0 && targetSlot != targetEmptySlot) {
+                            e.setCancelled(true);
+                            runSync(() -> {
+                                InventoryHolder theHolder = targetInventory.getHolder();
+                                ViewHolder viewHolder = theHolder instanceof ViewHolder ? ((ViewHolder) theHolder) : null;
+                                if (viewHolder == null) {
+                                    return;
+                                }
+                                ItemStack clickedItem = clickedInv.getItem(e.getSlot());
+                                // check the item is equal after 1 tick
+                                if (clickedItem == null || !clickedItem.equals(item)) {
+                                    return;
+                                }
+                                ItemStack targetItem = targetInventory.getItem(targetEmptySlot);
+                                if (targetItem == null || targetItem.getType() == Material.AIR) {
+                                    targetInventory.setItem(targetEmptySlot, clickedItem);
+                                } else if (targetItem.isSimilar(clickedItem) && targetItem.getAmount() + clickedItem.getAmount() <= targetItem.getType().getMaxStackSize()) {
+                                    targetItem.setAmount(targetItem.getAmount() + clickedItem.getAmount());
+                                }
+                                clickedInv.setItem(e.getSlot(), null);
+                                viewHolder.updateViewContentsWithPlayer(p);
+                            });
+                        }
+                    }
+                    break;
                 default:
                     e.setCancelled(true);
                     break;
@@ -143,7 +173,7 @@ public class BukkitView {
                 handleAction(p, holder, action);
             }
             // update user input items
-            runSync(holder::updateViewContents);
+            runSync(() -> holder.updateViewContentsWithPlayer(p));
         }
 
         @EventHandler
@@ -159,6 +189,7 @@ public class BukkitView {
                 return;
             }
             // update user input items
+            Player p = (Player) e.getWhoClicked();
             ChestView newView = view.withContents(view.getContents().updated(topInv));
             holder.setView(newView);
             if (
@@ -167,7 +198,7 @@ public class BukkitView {
             ) {
                 e.setCancelled(true);
             }
-            runSync(holder::updateViewContents);
+            runSync(() -> holder.updateViewContentsWithPlayer(p));
         }
 
         @EventHandler
@@ -181,10 +212,11 @@ public class BukkitView {
             if (view == null) {
                 return;
             }
+            // update user input items
             Player p = (Player) e.getPlayer();
             ViewAction action = ViewAction.NOTHING;
             try {
-                action = view.getOnClose().apply(new CloseEvent(view, p));
+                action = view.getOnClose().apply(new CloseEvent(p, view));
             } catch (Exception ex) {
                 plugin.getLogger().log(Level.WARNING, ex, () -> "Error on inventory close!");
             }
@@ -208,8 +240,10 @@ public class BukkitView {
             }
             if (action instanceof ViewAction.Open) {
                 ViewAction.Open open = (ViewAction.Open) action;
-                holder.setView(null);
-                runSync(() -> openView(open.getView(), p, plugin));
+                runSync(() -> {
+                    openView(open.getView(), p, plugin);
+                    holder.setView(null);
+                });
             } else if (action instanceof ViewAction.Reopen) {
                 runSync(() -> openView(currentView, p, plugin));
             } else if (action instanceof ViewAction.Close) {
@@ -227,7 +261,7 @@ public class BukkitView {
             } else if (action instanceof ViewAction.Update) {
                 ViewAction.Update update = (ViewAction.Update) action;
                 ChestView newView = currentView.withContents(update.getContents());
-                updateInventory(update.getContents(), holder.getInventory(), new OpenEvent(newView, p));
+                updateInventory(update.getContents(), holder.getInventory(), new OpenEvent(p, newView));
                 holder.setView(newView);
             } else if (action instanceof ViewAction.UpdateAsync) {
                 ViewAction.UpdateAsync updateAsync = (ViewAction.UpdateAsync) action;
@@ -236,7 +270,7 @@ public class BukkitView {
                         ViewContents contents = updateAsync.getContentsFuture().get(30, TimeUnit.SECONDS);
                         runSync(() -> {
                             ChestView newView = currentView.withContents(contents);
-                            updateInventory(contents, holder.getInventory(), new OpenEvent(newView, p));
+                            updateInventory(contents, holder.getInventory(), new OpenEvent(p, newView));
                             holder.setView(newView);
                         });
                     } catch (Exception ex) {

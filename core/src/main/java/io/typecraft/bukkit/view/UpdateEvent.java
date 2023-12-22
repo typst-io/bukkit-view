@@ -3,10 +3,13 @@ package io.typecraft.bukkit.view;
 import lombok.Value;
 import lombok.With;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.Map;
 
 @Value
 @With
-public class OpenEvent {
+public class UpdateEvent {
     Player player;
-    ChestView view;
+    Map<Integer, ItemStack> items;
 }

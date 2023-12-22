@@ -53,20 +53,26 @@ public class ViewConfigCodec {
             }
             if (slot >= 0) {
                 controls.put(slot, ViewControl.of(
-                        e -> ViewPlugin.inst.replacePlaceholder(e.getViewer(), item.clone()),
+                        e -> ViewPlugin.inst.replacePlaceholder(e.getPlayer(), item.clone()),
                         e -> {
                             List<String> cmds = commands.stream()
-                                    .map(a -> a.replace("%player%", e.getClicker().getName()))
+                                    .map(a -> a.replace("%player%", e.getPlayer().getName()))
                                     .collect(Collectors.toList());
                             for (String cmd : cmds) {
-                                StringCommandExecutor.execute(ViewPlugin.inst, e.getClicker(), cmd);
+                                StringCommandExecutor.execute(ViewPlugin.inst, e.getPlayer(), cmd);
                             }
                             return ViewAction.NOTHING;
                         }
                 ));
             }
         }
-        return Optional.of(ChestView.of(title, row, ViewContents.of(controls, new HashMap<>()), e -> ViewAction.NOTHING));
+        return Optional.of(ChestView.builder()
+                .title(title)
+                .row(row)
+                .contents(ViewContents.of(controls, new HashMap<>()))
+                .onClose(e -> ViewAction.NOTHING)
+                .onContentsUpdate(e -> {})
+                .build());
     }
 
     public static Optional<ItemStack> parseItem(ConfigurationSection xs) {

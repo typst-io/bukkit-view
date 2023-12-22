@@ -10,7 +10,7 @@ import org.bukkit.event.inventory.InventoryAction;
 @With
 public class ClickEvent {
     private final ChestView view;
-    private final Player clicker;
+    private final Player player;
     // TODO: Can this normalize?
     private final ClickType click;
     private final InventoryAction action;
