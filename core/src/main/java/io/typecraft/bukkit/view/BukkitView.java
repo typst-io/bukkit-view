@@ -126,19 +126,22 @@ public class BukkitView {
                     if (clickedInv.equals(bottomInv) && view.getContents().getControls().containsKey(targetSlot)) {
                         e.setCancelled(true);
                     }
+                    // overwrite target slots
                     List<Integer> overwrittenSlots = view.getOverwriteMoveToOtherInventorySlots();
                     if (clickedInv.equals(bottomInv) && !overwrittenSlots.isEmpty()) {
                         ItemStack item = e.getCurrentItem();
                         if (item == null || item.getType() == Material.AIR) {
                             return;
                         }
+                        // only if the default target slot and the overwritten slot is different
                         int targetEmptySlot = view.findFirstSpace(overwrittenSlots, item);
                         if (targetEmptySlot >= 0 && targetSlot != targetEmptySlot) {
                             e.setCancelled(true);
                             runSync(() -> {
                                 InventoryHolder theHolder = targetInventory.getHolder();
                                 ViewHolder viewHolder = theHolder instanceof ViewHolder ? ((ViewHolder) theHolder) : null;
-                                if (viewHolder == null) {
+                                ChestView theView = viewHolder != null ? viewHolder.getView() : null;
+                                if (theView == null) {
                                     return;
                                 }
                                 ItemStack clickedItem = clickedInv.getItem(e.getSlot());
@@ -146,9 +149,13 @@ public class BukkitView {
                                 if (clickedItem == null || !clickedItem.equals(item)) {
                                     return;
                                 }
-                                ItemStack targetItem = targetInventory.getItem(targetEmptySlot);
+                                int newTargetSlot = theView.findFirstSpace(overwrittenSlots, item);
+                                if (newTargetSlot < 0) {
+                                    return;
+                                }
+                                ItemStack targetItem = targetInventory.getItem(newTargetSlot);
                                 if (targetItem == null || targetItem.getType() == Material.AIR) {
-                                    targetInventory.setItem(targetEmptySlot, clickedItem);
+                                    targetInventory.setItem(newTargetSlot, clickedItem);
                                 } else if (targetItem.isSimilar(clickedItem) && targetItem.getAmount() + clickedItem.getAmount() <= targetItem.getType().getMaxStackSize()) {
                                     targetItem.setAmount(targetItem.getAmount() + clickedItem.getAmount());
                                 }
