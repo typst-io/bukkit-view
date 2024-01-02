@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -25,24 +26,30 @@ public class ChestView {
     @Builder.Default
     Function<CloseEvent, ViewAction> onClose = e -> ViewAction.NOTHING;
     @Builder.Default
-    Consumer<UpdateEvent> onContentsUpdate = e -> {};
+    Consumer<UpdateEvent> onContentsUpdate = e -> {
+    };
     @Builder.Default
     List<Integer> overwriteMoveToOtherInventorySlots = Collections.emptyList();
 
-    int findFirstSpace(List<Integer> slots, @Nullable ItemStack item) {
-        int ret = -1;
+    List<Integer> findSpaces(List<Integer> slots, ItemStack item) {
+        List<Integer> ret = new ArrayList<>();
+        int amount = item.getAmount();
         for (Integer slot : slots) {
             if (getContents().getControls().containsKey(slot)) {
                 continue;
             }
+            if (amount <= 0) {
+                break;
+            }
             ItemStack slotItem = getContents().getItems().get(slot);
             if (slotItem == null || slotItem.getType() == Material.AIR) {
-                return slot;
-            }
-            if (item != null && item.isSimilar(slotItem)) {
-                int newAmount = slotItem.getAmount() + item.getAmount();
-                if (newAmount <= slotItem.getType().getMaxStackSize()) {
-                    return slot;
+                ret.add(slot);
+                amount -= item.getType().getMaxStackSize();
+            } else if (slotItem.isSimilar(item)) {
+                int newAmount = Math.min(slotItem.getAmount() + item.getAmount(), slotItem.getType().getMaxStackSize());
+                if (newAmount > slotItem.getAmount()) {
+                    ret.add(slot);
+                    amount -= newAmount - slotItem.getAmount();
                 }
             }
         }

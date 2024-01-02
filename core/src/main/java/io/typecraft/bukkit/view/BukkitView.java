@@ -14,7 +14,10 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -133,9 +136,13 @@ public class BukkitView {
                         if (item == null || item.getType() == Material.AIR) {
                             return;
                         }
+                        List<Integer> targetEmptySlots = view.findSpaces(overwrittenSlots, item);
+                        // cancel if there's no space
+                        if (targetEmptySlots.isEmpty()) {
+                            e.setCancelled(true);
+                        }
                         // only if the default target slot and the overwritten slot is different
-                        int targetEmptySlot = view.findFirstSpace(overwrittenSlots, item);
-                        if (targetEmptySlot >= 0 && targetSlot != targetEmptySlot) {
+                        if (!targetEmptySlots.isEmpty() && !targetEmptySlots.equals(Collections.singletonList(targetSlot))) {
                             e.setCancelled(true);
                             runSync(() -> {
                                 InventoryHolder theHolder = targetInventory.getHolder();
@@ -149,17 +156,27 @@ public class BukkitView {
                                 if (clickedItem == null || !clickedItem.equals(item)) {
                                     return;
                                 }
-                                int newTargetSlot = theView.findFirstSpace(overwrittenSlots, item);
-                                if (newTargetSlot < 0) {
+                                List<Integer> newTargetSlots = theView.findSpaces(overwrittenSlots, item);
+                                if (newTargetSlots.isEmpty()) {
                                     return;
                                 }
-                                ItemStack targetItem = targetInventory.getItem(newTargetSlot);
-                                if (targetItem == null || targetItem.getType() == Material.AIR) {
-                                    targetInventory.setItem(newTargetSlot, clickedItem);
-                                } else if (targetItem.isSimilar(clickedItem) && targetItem.getAmount() + clickedItem.getAmount() <= targetItem.getType().getMaxStackSize()) {
-                                    targetItem.setAmount(targetItem.getAmount() + clickedItem.getAmount());
+                                // add
+                                for (Integer newTargetSlot : newTargetSlots) {
+                                    ItemStack targetItem = targetInventory.getItem(newTargetSlot);
+                                    if (clickedItem.getAmount() <= 0) {
+                                        break;
+                                    }
+                                    if (targetItem == null || targetItem.getType() == Material.AIR) {
+                                        targetInventory.setItem(newTargetSlot, clickedItem);
+                                        clickedInv.setItem(e.getSlot(), null);
+                                        clickedItem.setAmount(0);
+                                    } else if (targetItem.isSimilar(clickedItem)) {
+                                        int oldAmount = targetItem.getAmount();
+                                        int newAmount = Math.min(oldAmount + clickedItem.getAmount(), targetItem.getType().getMaxStackSize());
+                                        targetItem.setAmount(newAmount);
+                                        clickedItem.setAmount(clickedItem.getAmount() - (newAmount - oldAmount));
+                                    }
                                 }
-                                clickedInv.setItem(e.getSlot(), null);
                                 viewHolder.updateViewContentsWithPlayer(p);
                             });
                         }
@@ -219,7 +236,6 @@ public class BukkitView {
             if (view == null) {
                 return;
             }
-            // update user input items
             Player p = (Player) e.getPlayer();
             ViewAction action = ViewAction.NOTHING;
             try {
@@ -247,10 +263,7 @@ public class BukkitView {
             }
             if (action instanceof ViewAction.Open) {
                 ViewAction.Open open = (ViewAction.Open) action;
-                runSync(() -> {
-                    openView(open.getView(), p, plugin);
-                    holder.setView(null);
-                });
+                runSync(() -> openView(open.getView(), p, plugin));
             } else if (action instanceof ViewAction.Reopen) {
                 runSync(() -> openView(currentView, p, plugin));
             } else if (action instanceof ViewAction.Close) {
