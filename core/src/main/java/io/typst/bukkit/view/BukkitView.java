@@ -263,6 +263,7 @@ public class BukkitView {
             }
             if (action instanceof ViewAction.Open) {
                 ViewAction.Open open = (ViewAction.Open) action;
+                holder.setView(null);
                 runSync(() -> openView(open.getView(), p, plugin));
             } else if (action instanceof ViewAction.Reopen) {
                 runSync(() -> openView(currentView, p, plugin));
