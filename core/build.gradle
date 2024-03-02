@@ -5,8 +5,8 @@ plugins {
     id 'kr.entree.spigradle.base' version '2.3.4'
 }
 
-group 'io.typecraft'
-version '6.0.2'
+group 'io.typst'
+version '7.0.0'
 
 repositories {
     mavenCentral()
@@ -28,7 +28,7 @@ publishing {
             pom {
                 name.set("${project.group}:${project.name}")
                 description.set("Pure view library for Minecraft.")
-                url.set("https://github.com/typecraft-io/bukkit-view")
+                url.set("https://github.com/typst-io/bukkit-view")
                 licenses {
                     license {
                         name.set("The GNU General Public License, Version 3.0")
@@ -43,9 +43,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection.set("scm:git:git://github.com/typecraft-io/bukkit-view.git")
-                    developerConnection.set("scm:git:ssh://github.com:typecraft-io/bukkit-view.git")
-                    url.set("https://github.com/typecraft-io/bukkit-view/tree/master")
+                    connection.set("scm:git:git://github.com/typst-io/bukkit-view.git")
+                    developerConnection.set("scm:git:ssh://github.com:typst-io/bukkit-view.git")
+                    url.set("https://github.com/typst-io/bukkit-view/tree/master")
                 }
             }
         }

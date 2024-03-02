@@ -6,7 +6,7 @@ There is no side effect except `BukkitView.class`, all functions just pure, ther
 
 Also, this library is a good showcase how to do declarative programming in Java.
 
-[Example is here!](https://github.com/typecraft-io/bukkit-view/blob/main/plugin/src/main/java/io/typecraft/bukkit/view/plugin/ViewPlugin.java)
+[Example is here!](https://github.com/typst-io/bukkit-view/blob/main/plugin/src/main/java/io/typst/bukkit/view/plugin/ViewPlugin.java)
 
 ## Import
 
@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.typecraft:bukkit-view-core:5.1.2")
+    implementation("io.typst:bukkit-view-core:6.0.0")
 }
 ```
 
@@ -27,7 +27,7 @@ dependencies {
 ```xml
 <dependencies>
     <dependency>
-        <groupId>io.typecraft</groupId>
+        <groupId>io.typst</groupId>
         <artifactId>bukkit-view-core</artifactId>
         <version>5.1.2</version>
     </dependency>
@@ -36,10 +36,10 @@ dependencies {
 
 ### Quickstart
 
-https://github.com/typecraft-io/bukkit-view-template
+https://github.com/typst-io/bukkit-view-template
 
 ```shell
-git clone https://github.com/typecraft-io/bukkit-view-template
+git clone https://github.com/typst-io/bukkit-view-template
 ```
 
 ## Initialize
