@@ -6,7 +6,6 @@ plugins {
 }
 
 group 'io.typst'
-version '7.0.1'
 
 repositories {
     mavenCentral()

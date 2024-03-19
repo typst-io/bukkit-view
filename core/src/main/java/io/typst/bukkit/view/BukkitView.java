@@ -188,11 +188,13 @@ public class BukkitView {
             }
             // Notify control onClick
             if (viewControl != null) {
-                ViewAction action = ViewAction.NOTHING;
+                ViewAction action;
                 try {
                     action = viewControl.getOnClick().apply(new ClickEvent(view, p, e.getClick(), e.getAction(), e.getHotbarButton()));
                 } catch (Exception ex) {
                     plugin.getLogger().log(Level.WARNING, ex, () -> "Error on inventory click!");
+                    // To block after actions
+                    action = ViewAction.CLOSE;
                 }
                 handleAction(p, holder, action);
             }
