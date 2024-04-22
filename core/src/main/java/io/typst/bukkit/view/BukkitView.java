@@ -254,7 +254,10 @@ public class BukkitView {
             }
             // give back the items
             if (giveBackInputItems) {
-                runSync(() -> giveBackContents(view, p));
+                runSync(() -> {
+                    ChestView newView = view.withContents(view.getContents().updated(topInv));
+                    giveBackContents(newView, p);
+                });
             }
         }
 
