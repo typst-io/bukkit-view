@@ -1,5 +1,7 @@
 # bukkit-view
 
+![Maven Central Version](https://img.shields.io/maven-central/v/io.typst/bukkit-view-core)
+
 A [pure](https://en.wikipedia.org/wiki/Purely_functional_programming) library to express minecraft chest view.
 
 There is no side effect except `BukkitView.class`, all functions just pure, therefore this can be run in multithreads -- even Bukkit part can't -- and easy to write unit tests.
