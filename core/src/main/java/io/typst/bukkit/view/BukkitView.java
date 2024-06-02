@@ -111,7 +111,15 @@ public class BukkitView {
                 case LEFT:
                 case RIGHT:
                     if (viewControl != null) {
-                        e.setCancelled(true);
+                        // don't cancel on pickup a slot that conflicts between items and controls
+                        ItemStack cursor = e.getCursor();
+                        if ((cursor == null || cursor.getType() == Material.AIR) && view.getContents().getItems().containsKey(e.getRawSlot())) {
+                            // set control item
+                            view.getContents().getItems().remove(e.getRawSlot());
+                            runSync(() -> topInv.setItem(e.getRawSlot(), viewControl.getItem(new OpenEvent(p, view))));
+                        } else {
+                            e.setCancelled(true);
+                        }
                     }
                     break;
                 case SHIFT_LEFT:
