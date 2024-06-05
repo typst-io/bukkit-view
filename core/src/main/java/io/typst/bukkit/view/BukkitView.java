@@ -137,7 +137,7 @@ public class BukkitView {
                     if (clickedInv.equals(bottomInv) && view.getContents().getControls().containsKey(targetSlot)) {
                         e.setCancelled(true);
                     }
-                    // overwrite target slots
+                    // override target slots
                     List<Integer> overwrittenSlots = view.getOverwriteMoveToOtherInventorySlots();
                     if (clickedInv.equals(bottomInv) && !overwrittenSlots.isEmpty()) {
                         ItemStack item = e.getCurrentItem();
@@ -187,6 +187,12 @@ public class BukkitView {
                                 }
                                 viewHolder.updateViewContentsWithPlayer(p);
                             });
+                        }
+                    } else {
+                        ItemStack clickedItem = e.getView().getItem(e.getRawSlot());
+                        int slot = clickedItem != null ? topInv.first(clickedItem) : -1;
+                        if (slot >= 0 && view.getContents().getControls().containsKey(slot)) {
+                            e.setCancelled(true);
                         }
                     }
                     break;
