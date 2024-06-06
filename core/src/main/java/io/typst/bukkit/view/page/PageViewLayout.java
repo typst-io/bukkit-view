@@ -31,22 +31,22 @@ public class PageViewLayout {
         List<Integer> slots = IntStream.range(0, cSize).boxed().collect(Collectors.toList());
         Map<Integer, Function<PageContext, ViewControl>> controls = new HashMap<>();
         controls.put(cSize + 3, ctx -> ViewControl.of(
-            e -> BukkitItem.ofJust(buttonMaterial)
-                .withAmount(Math.max(1, ctx.getPage()))
-                .withName(String.format(
-                    "<- %s/%s", ctx.getPage(), ctx.getMaxPage()
-                ))
-                .build(),
-            e -> new ViewAction.Update(ctx.getLayout().toView(ctx.getPage() - 1).getContents())
+                e -> BukkitItem.ofJust(buttonMaterial)
+                        .withAmount(Math.max(1, ctx.getPage()))
+                        .withName(String.format(
+                                "<- %s/%s", ctx.getPage(), ctx.getMaxPage()
+                        ))
+                        .build(),
+                e -> new ViewAction.Update(ctx.getLayout().toView(ctx.getPage() - 1).getContents())
         ));
         controls.put(cSize + 5, ctx -> ViewControl.of(
-            e -> BukkitItem.ofJust(buttonMaterial)
-                .withAmount(Math.max(1, ctx.getPage()))
-                .withName(String.format(
-                    "%s/%s ->", ctx.getPage(), ctx.getMaxPage()
-                ))
-                .build(),
-            e -> new ViewAction.Update(ctx.getLayout().toView(ctx.getPage() + 1).getContents())
+                e -> BukkitItem.ofJust(buttonMaterial)
+                        .withAmount(Math.max(1, ctx.getPage()))
+                        .withName(String.format(
+                                "%s/%s ->", ctx.getPage(), ctx.getMaxPage()
+                        ))
+                        .build(),
+                e -> new ViewAction.Update(ctx.getLayout().toView(ctx.getPage() + 1).getContents())
         ));
         return of(title, row, elements, slots, controls);
     }
@@ -55,7 +55,7 @@ public class PageViewLayout {
         Map<Integer, ViewControl> viewControls = new HashMap<>();
         int contentSize = getSlots().size();
         int count = getElements().size();
-        int maxPage = count / contentSize + Math.min(count % contentSize, 1);
+        int maxPage = Math.max(1, count / contentSize + Math.min(count % contentSize, 1));
         int coercedPage = Math.max(Math.min(page, maxPage), 1);
         PageContext ctx = PageContext.of(this, maxPage, coercedPage);
         List<Function<PageContext, ViewControl>> subItemList = pagingList(contentSize, coercedPage, getElements());
@@ -81,9 +81,9 @@ public class PageViewLayout {
         int start = (page - 1) * elementSize;
         int end = page * elementSize;
         return list.isEmpty()
-            ? Collections.emptyList()
-            : list.subList(
-            Math.min(Math.max(start, 0), list.size()),
-            Math.min(Math.max(end, 0), list.size()));
+                ? Collections.emptyList()
+                : list.subList(
+                Math.min(Math.max(start, 0), list.size()),
+                Math.min(Math.max(end, 0), list.size()));
     }
 }
