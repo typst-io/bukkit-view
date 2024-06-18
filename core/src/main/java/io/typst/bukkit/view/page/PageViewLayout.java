@@ -1,9 +1,6 @@
 package io.typst.bukkit.view.page;
 
-import io.typst.bukkit.view.ChestView;
-import io.typst.bukkit.view.ViewAction;
-import io.typst.bukkit.view.ViewContents;
-import io.typst.bukkit.view.ViewControl;
+import io.typst.bukkit.view.*;
 import io.typst.bukkit.view.item.BukkitItem;
 import lombok.Data;
 import lombok.With;
@@ -25,6 +22,7 @@ public class PageViewLayout {
     private final List<Function<PageContext, ViewControl>> elements;
     private final List<Integer> slots;
     private final Map<Integer, Function<PageContext, ViewControl>> controls;
+    private final Function<PageContext, Function<CloseEvent, ViewAction>> onClose;
 
     public static PageViewLayout ofDefault(String title, int row, Material buttonMaterial, List<Function<PageContext, ViewControl>> elements) {
         int cSize = (row - 1) * 9;
@@ -48,7 +46,7 @@ public class PageViewLayout {
                         .build(),
                 e -> new ViewAction.Update(ctx.getLayout().toView(ctx.getPage() + 1).getContents())
         ));
-        return of(title, row, elements, slots, controls);
+        return of(title, row, elements, slots, controls, ptx -> e -> ViewAction.CLOSE);
     }
 
     public ChestView toView(int page) {
@@ -74,6 +72,7 @@ public class PageViewLayout {
                 .title(title)
                 .row(row)
                 .contents(contents)
+                .onClose(onClose.apply(ctx))
                 .build();
     }
 
