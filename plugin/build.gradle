@@ -1,22 +1,24 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id 'java'
-    id 'kr.entree.spigradle' version '2.3.4'
+    id 'kr.entree.spigradle' version '2.4.4'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
-group 'io.typst'
+group = 'io.typst'
 
 repositories {
     mavenCentral()
     spigotmc()
-    maven { url 'https://repo.extendedclip.com/content/repositories/placeholderapi'}
+    maven { url = 'https://repo.extendedclip.com/releases/' }
 }
 
 dependencies {
     shadow project(':bukkit-view-core')
     compileOnly spigot('1.18')
     compileOnly lombok()
-    compileOnly 'me.clip:placeholderapi:2.11.3'
+    compileOnly 'me.clip:placeholderapi:2.11.6'
     annotationProcessor lombok()
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
@@ -29,15 +31,17 @@ spigot {
             aliases = ['view']
         }
     }
-    apiVersion '1.18'
-    softDepends 'PlaceholderAPI'
+    apiVersion = '1.18'
+    softDepends = ['PlaceholderAPI']
 }
 
-shadowJar {
+tasks.named('shadowJar', ShadowJar) {
     configurations = [project.configurations.shadow]
 }
 
-assemble.dependsOn(shadowJar)
+tasks.named('assemble') {
+    dependsOn(shadowJar)
+}
 
 java {
     toolchain {

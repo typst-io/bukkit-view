@@ -2,8 +2,8 @@ plugins {
     id 'base'
 }
 
-group 'io.typst'
+group = 'io.typst'
 
 allprojects {
-    version '7.1.0'
+    version = '7.1.0'
 }

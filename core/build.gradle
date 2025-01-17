@@ -2,10 +2,10 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'signing'
-    id 'kr.entree.spigradle.base' version '2.3.4'
+    id 'kr.entree.spigradle.base' version '2.4.4'
 }
 
-group 'io.typst'
+group = 'io.typst'
 
 repositories {
     mavenCentral()
