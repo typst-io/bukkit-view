@@ -16,10 +16,10 @@ repositories {
 
 dependencies {
     shadow project(':bukkit-view-core')
-    compileOnly spigot('1.18')
-    compileOnly lombok()
-    compileOnly 'me.clip:placeholderapi:2.11.6'
-    annotationProcessor lombok()
+    compileOnly spigot('1.21.4')
+    compileOnly lombok('1.18.36')
+    compileOnly('me.clip:placeholderapi:2.11.6')
+    annotationProcessor lombok('1.18.36')
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
@@ -31,7 +31,7 @@ spigot {
             aliases = ['view']
         }
     }
-    apiVersion = '1.18'
+    apiVersion = '1.21'
     softDepends = ['PlaceholderAPI']
 }
 
@@ -45,7 +45,7 @@ tasks.named('assemble') {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
+        languageVersion = JavaLanguageVersion.of(17)
     }
 }
 
