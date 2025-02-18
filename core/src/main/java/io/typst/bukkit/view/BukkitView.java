@@ -106,6 +106,20 @@ public class BukkitView {
             // update user input items
             Player p = (Player) e.getWhoClicked();
             ViewControl viewControl = view.getContents().getControls().get(e.getRawSlot());
+
+            // bottom inventory click event
+            if (e.getView().getBottomInventory() == e.getClickedInventory()) {
+                ViewAction action;
+                try {
+                    action = view.getOnBottomClick().apply(new ClickEvent(view, p, e.getClick(), e.getAction(), e.getHotbarButton()));
+                } catch (Exception ex) {
+                    plugin.getLogger().log(Level.WARNING, ex, () -> "Error on bottom inventory click!");
+                    // To block after actions
+                    action = ViewAction.CLOSE;
+                }
+                handleAction(p, holder, action);
+            }
+
             // Cancel if tried to move the control items
             switch (e.getClick()) {
                 case LEFT:
