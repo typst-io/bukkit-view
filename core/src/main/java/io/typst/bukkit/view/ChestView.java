@@ -25,7 +25,7 @@ public class ChestView {
     @Builder.Default
     Function<CloseEvent, ViewAction> onClose = e -> ViewAction.NOTHING;
     @Builder.Default
-    Function<ClickEvent, ViewAction> onBottomClick = e -> ViewAction.NOTHING;
+    Function<BottomClickEvent, ViewAction> onBottomClick = e -> ViewAction.NOTHING;
     @Builder.Default
     Consumer<UpdateEvent> onContentsUpdate = e -> {
     };

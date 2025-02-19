@@ -111,7 +111,7 @@ public class BukkitView {
             if (e.getView().getBottomInventory() == e.getClickedInventory()) {
                 ViewAction action;
                 try {
-                    action = view.getOnBottomClick().apply(new ClickEvent(view, p, e.getClick(), e.getAction(), e.getHotbarButton()));
+                    action = view.getOnBottomClick().apply(new BottomClickEvent(view, p, e.getClick(), e.getCurrentItem(), e.getAction()));
                 } catch (Exception ex) {
                     plugin.getLogger().log(Level.WARNING, ex, () -> "Error on bottom inventory click!");
                     // To block after actions
