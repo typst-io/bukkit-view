@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.With;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -19,9 +20,10 @@ public class BukkitItem {
     private final List<String> lore;
     private final Integer modelData;
     private final Map<Enchantment, Integer> enchants;
+    private final Set<ItemFlag> flags;
 
     public static BukkitItem ofJust(Material material) {
-        return of(material, 1, (short) 0, "", Collections.emptyList(), 0, Collections.emptyMap());
+        return of(material, 1, (short) 0, "", Collections.emptyList(), 0, Collections.emptyMap(), Collections.emptySet());
     }
 
     public static BukkitItem from(ItemStack item) {
@@ -33,7 +35,8 @@ public class BukkitItem {
             meta != null && meta.hasDisplayName() ? meta.getDisplayName() : "",
             meta != null && meta.hasLore() ? meta.getLore() : Collections.emptyList(),
             meta != null && meta.hasCustomModelData() ? meta.getCustomModelData() : 0,
-            meta != null && meta.hasEnchants() ? meta.getEnchants() : Collections.emptyMap()
+            meta != null && meta.hasEnchants() ? meta.getEnchants() : Collections.emptyMap(),
+            meta != null && meta.getItemFlags().isEmpty() ? meta.getItemFlags() : Collections.emptySet()
         );
     }
 
@@ -63,6 +66,9 @@ public class BukkitItem {
             }
             if (getModelData() != 0) {
                 meta.setCustomModelData(getModelData());
+            }
+            if (!getFlags().isEmpty()) {
+                meta.addItemFlags(getFlags().toArray(new ItemFlag[0]));
             }
             x.setItemMeta(meta);
         }
