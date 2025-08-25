@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.typst:bukkit-view-core:7.2.0")
+    implementation("io.typst:bukkit-view-core:7.2.1")
 }
 ```
 
@@ -31,7 +31,7 @@ dependencies {
     <dependency>
         <groupId>io.typst</groupId>
         <artifactId>bukkit-view-core</artifactId>
-        <version>7.2.0</version>
+        <version>7.2.1</version>
     </dependency>
 </dependencies>
 ```
@@ -60,10 +60,11 @@ public class MyPlugin extends JavaPlugin {
 ```java
 ChestView subView = ...;
 
-Map<Integer, ViewControl> map = new HashMap<>();
 String title = "title";
 int row = 1;
-map.put(3, ViewControl.of(
+Map<Integer, ViewControl> controls = new HashMap<>();
+
+controls.put(3, ViewControl.of(
     new ItemStack(Material.DIAMOND),
     e -> {
         // this view item don't -- also shouldn't -- know how to open view,
@@ -71,8 +72,12 @@ map.put(3, ViewControl.of(
         return new ViewAction.Open(subView);
     }
 ));
-ViewContents contents = ViewContents.ofControls(map);
-ChestView view = ChestView.just(title, row, contents);
+
+ChestView view = ChestView.builder()
+    .title(title)
+    .row(row)
+    .contents(ViewContents.ofControls(controls))
+    .build();
 BukkitView.openView(view, player, plugin);
 ```
 

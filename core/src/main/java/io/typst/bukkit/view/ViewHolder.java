@@ -10,6 +10,7 @@ public class ViewHolder implements InventoryHolder {
     private final Plugin plugin;
     private ChestView view;
     private Inventory inventory = null;
+    private boolean giveBackItems = true;
 
     public ViewHolder(Plugin plugin) {
         this.plugin = plugin;
@@ -57,5 +58,13 @@ public class ViewHolder implements InventoryHolder {
 
     public Plugin getPlugin() {
         return plugin;
+    }
+
+    public boolean isGiveBackItems() {
+        return giveBackItems;
+    }
+
+    public void setGiveBackItems(boolean giveBackItems) {
+        this.giveBackItems = giveBackItems;
     }
 }

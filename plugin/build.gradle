@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id 'java'
-    id 'kr.entree.spigradle' version '2.4.4'
+    id 'kr.entree.spigradle' version '2.4.6'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
@@ -27,7 +27,7 @@ dependencies {
 spigot {
     name = 'BukkitView'
     commands {
-        create('bukkitview') {
+        register('bukkitview') {
             aliases = ['view']
         }
     }

@@ -259,7 +259,7 @@ public class BukkitView {
             } catch (Exception ex) {
                 plugin.getLogger().log(Level.WARNING, ex, () -> "Error on inventory close!");
             }
-            boolean giveBackInputItems = true;
+            boolean giveBackInputItems = holder.isGiveBackItems();
             if (action instanceof ViewAction.Close) {
                 ViewAction.Close close = (ViewAction.Close) action;
                 giveBackInputItems = close.isGiveBackItems();
@@ -287,6 +287,7 @@ public class BukkitView {
             } else if (action instanceof ViewAction.Reopen) {
                 runSync(() -> openView(currentView, p, plugin));
             } else if (action instanceof ViewAction.Close) {
+                holder.setGiveBackItems(((ViewAction.Close) action).isGiveBackItems());
                 runSync(p::closeInventory);
             } else if (action instanceof ViewAction.OpenAsync) {
                 ViewAction.OpenAsync openAsync = ((ViewAction.OpenAsync) action);
