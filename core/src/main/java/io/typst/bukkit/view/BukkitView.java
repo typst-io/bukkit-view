@@ -248,18 +248,18 @@ public class BukkitView {
             if (holder == null || !holder.getPlugin().getName().equals(plugin.getName())) {
                 return;
             }
+            Player p = (Player) e.getPlayer();
             ChestView view = holder.getView();
             if (view == null) {
                 return;
             }
-            Player p = (Player) e.getPlayer();
+            boolean giveBackInputItems = holder.isGiveBackItems();
             ViewAction action = ViewAction.NOTHING;
             try {
                 action = view.getOnClose().apply(new CloseEvent(p, view));
             } catch (Exception ex) {
                 plugin.getLogger().log(Level.WARNING, ex, () -> "Error on inventory close!");
             }
-            boolean giveBackInputItems = holder.isGiveBackItems();
             if (action instanceof ViewAction.Close) {
                 ViewAction.Close close = (ViewAction.Close) action;
                 giveBackInputItems = close.isGiveBackItems();
@@ -268,10 +268,7 @@ public class BukkitView {
             }
             // give back the items
             if (giveBackInputItems) {
-                runSync(() -> {
-                    ChestView newView = view.withContents(view.getContents().updated(topInv));
-                    giveBackContents(newView, p);
-                });
+                runSync(() -> giveBackContents(view, p));
             }
         }
 
@@ -280,9 +277,9 @@ public class BukkitView {
             if (currentView == null) {
                 return;
             }
-            if (action instanceof ViewAction.Open) {
+            if (action instanceof ViewAction.Open && !holder.isDirty()) {
                 ViewAction.Open open = (ViewAction.Open) action;
-                holder.setView(null);
+                holder.setDirty(true);
                 runSync(() -> openView(open.getView(), p, plugin));
             } else if (action instanceof ViewAction.Reopen) {
                 runSync(() -> openView(currentView, p, plugin));

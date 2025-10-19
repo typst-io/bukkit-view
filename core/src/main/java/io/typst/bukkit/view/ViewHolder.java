@@ -8,9 +8,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class ViewHolder implements InventoryHolder {
     private final Plugin plugin;
-    private ChestView view;
+    private ChestView view = null;
     private Inventory inventory = null;
     private boolean giveBackItems = true;
+    private boolean dirty = false;
 
     public ViewHolder(Plugin plugin) {
         this.plugin = plugin;
@@ -66,5 +67,13 @@ public class ViewHolder implements InventoryHolder {
 
     public void setGiveBackItems(boolean giveBackItems) {
         this.giveBackItems = giveBackItems;
+    }
+
+    public boolean isDirty() {
+        return dirty;
+    }
+
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
     }
 }
