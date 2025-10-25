@@ -29,6 +29,8 @@ public class ChestView {
     };
     @Builder.Default
     List<Integer> overwriteMoveToOtherInventorySlots = Collections.emptyList();
+    @Builder.Default
+    ChestView parent = null;
 
     List<Integer> findSpaces(List<Integer> slots, ItemStack item) {
         List<Integer> ret = new ArrayList<>();

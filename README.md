@@ -20,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    implementation("io.typst:bukkit-view-core:7.2.1")
+    implementation("io.typst:bukkit-view-core:7.3.0")
 }
 ```
 
@@ -31,7 +31,7 @@ dependencies {
     <dependency>
         <groupId>io.typst</groupId>
         <artifactId>bukkit-view-core</artifactId>
-        <version>7.2.1</version>
+        <version>7.3.0</version>
     </dependency>
 </dependencies>
 ```

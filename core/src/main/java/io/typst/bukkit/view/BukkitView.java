@@ -266,9 +266,23 @@ public class BukkitView {
             } else {
                 handleAction(p, holder, action);
             }
+
+            // modal
+            if (!holder.isDirty() && view.getParent() != null) {
+                runSync(() -> {
+                    if (p.isOnline()) {
+                        openView(view.getParent(), p, plugin);
+                    }
+                });
+            }
+
             // give back the items
             if (giveBackInputItems) {
-                runSync(() -> giveBackContents(view, p));
+                runSync(() -> {
+                    if (p.isOnline()) {
+                        giveBackContents(view, p);
+                    }
+                });
             }
         }
 
