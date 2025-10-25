@@ -363,7 +363,6 @@ public class BukkitView {
             for (ItemStack item : failures.values()) {
                 p.getWorld().dropItem(p.getEyeLocation(), item);
             }
-            view.getContents().getItems().clear();
         }
 
         private void runSync(Runnable runnable) {
