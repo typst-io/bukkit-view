@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.21"
+    kotlin("jvm") version "2.2.21"
 }
 
 repositories {
@@ -8,4 +8,8 @@ repositories {
 
 dependencies {
     implementation ("org.jetbrains.kotlin:kotlin-stdlib:1.8.21")
+}
+
+kotlin {
+    jvmToolchain(11)
 }

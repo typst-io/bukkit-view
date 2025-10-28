@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'signing'
-    id 'kr.entree.spigradle.base' version '2.4.4'
+    id 'io.typst.spigradle' version '3.1.2'
 }
 
 group = 'io.typst'
@@ -16,9 +16,12 @@ dependencies {
     compileOnly spigot('1.20.1')
     compileOnly lombok('1.18.36')
     annotationProcessor lombok('1.18.36')
+    implementation 'org.jetbrains:annotations:26.0.2-1'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
+
+generateSpigotDescription.enabled = false
 
 publishing {
     publications {
@@ -67,7 +70,7 @@ signing {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(11)
     }
     withSourcesJar()
     withJavadocJar()
