@@ -16,7 +16,7 @@ repositories {
 
 dependencies {
     shadow project(':bukkit-view-core')
-    compileOnly spigot('1.20.1')
+    compileOnly spigot('1.21.8')
     compileOnly lombok('1.18.36')
     compileOnly('me.clip:placeholderapi:2.11.6')
     annotationProcessor lombok('1.18.36')
@@ -45,7 +45,7 @@ tasks.named('assemble') {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(11)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
