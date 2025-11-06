@@ -28,7 +28,7 @@ public class ChestView {
     Consumer<UpdateEvent> onContentsUpdate = e -> {
     };
     @Builder.Default
-    List<Integer> overwriteMoveToOtherInventorySlots = Collections.emptyList();
+    List<InputSlot> overrideMoveToOtherInventorySlots = Collections.emptyList();
     @Builder.Default
     ChestView parent = null;
 

@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 public class BukkitView {
     /**
@@ -138,13 +139,18 @@ public class BukkitView {
                         e.setCancelled(true);
                     }
                     // override target slots
-                    List<Integer> overwrittenSlots = view.getOverwriteMoveToOtherInventorySlots();
-                    if (clickedInv.equals(bottomInv) && !overwrittenSlots.isEmpty()) {
+                    List<InputSlot> overriddenSlots = view.getOverrideMoveToOtherInventorySlots();
+                    if (clickedInv.equals(bottomInv) && !overriddenSlots.isEmpty()) {
                         ItemStack item = e.getCurrentItem();
                         if (item == null || item.getType() == Material.AIR) {
                             return;
                         }
-                        List<Integer> targetEmptySlots = view.findSpaces(overwrittenSlots, item);
+                        List<Integer> slots = overriddenSlots.stream()
+                                .flatMap(slot -> (slot.getWhitelist().isEmpty() || slot.getWhitelist().contains(item.getType()))
+                                        ? Stream.of(slot.getSlot())
+                                        : Stream.empty())
+                                .toList();
+                        List<Integer> targetEmptySlots = view.findSpaces(slots, item);
                         // cancel if there's no space
                         if (targetEmptySlots.isEmpty()) {
                             e.setCancelled(true);
@@ -164,7 +170,7 @@ public class BukkitView {
                                 if (clickedItem == null || !clickedItem.equals(item)) {
                                     return;
                                 }
-                                List<Integer> newTargetSlots = theView.findSpaces(overwrittenSlots, item);
+                                List<Integer> newTargetSlots = theView.findSpaces(slots, item);
                                 if (newTargetSlots.isEmpty()) {
                                     return;
                                 }
