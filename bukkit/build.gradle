@@ -24,13 +24,11 @@ repositories {
 }
 
 dependencies {
-    compileOnly spigot('1.21.8')
+    api project(':view-core')
+    api 'io.typst:inventory-bukkit:2.3.0'
     compileOnly lombok('1.18.36')
     annotationProcessor lombok('1.18.36')
-    implementation 'org.jetbrains:annotations:26.0.2-1'
-    api 'io.typst:inventory-core:2.3.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation spigot('1.21.8')
 }
 
 java {
@@ -39,18 +37,6 @@ java {
     }
     withSourcesJar()
     withJavadocJar()
-}
-
-javadoc {
-    options.encoding = 'UTF-8'
-}
-
-compileJava {
-    options.encoding = 'UTF-8'
-}
-
-test {
-    useJUnitPlatform()
 }
 
 registerPublish(this)

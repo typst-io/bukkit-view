@@ -1,10 +1,21 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'io.typst:spigradle:3.2.2'
+    }
+}
+
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id 'java'
-    id 'io.typst.spigradle' version '3.1.2'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
+
+pluginManager.apply('io.typst.spigradle')
 
 group = 'io.typst'
 
@@ -15,13 +26,21 @@ repositories {
 }
 
 dependencies {
-    shadow project(':bukkit-view-core')
+    shadow project(':view-bukkit')
     compileOnly spigot('1.21.8')
     compileOnly lombok('1.18.36')
     compileOnly('me.clip:placeholderapi:2.11.6')
     annotationProcessor lombok('1.18.36')
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    withSourcesJar()
+    withJavadocJar()
 }
 
 spigot {
