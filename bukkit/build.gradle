@@ -29,7 +29,6 @@ dependencies {
     api 'io.typst:inventory-bukkit:2.3.0'
     compileOnly lombok('1.18.36')
     annotationProcessor lombok('1.18.36')
-    implementation spigot('1.21.8')
 }
 
 java {
