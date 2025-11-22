@@ -4,7 +4,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'io.typst:spigradle:3.2.2'
+        classpath 'io.typst:spigradle:3.4.1'
     }
 }
 

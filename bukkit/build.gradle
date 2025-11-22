@@ -4,7 +4,7 @@ buildscript {
         mavenLocal()
     }
     dependencies {
-        classpath 'io.typst:spigradle:3.2.2'
+        classpath 'io.typst:spigradle:3.4.1'
     }
 }
 
@@ -24,6 +24,7 @@ repositories {
 }
 
 dependencies {
+    compileOnly spigot('1.21.8')
     api project(':view-core')
     api 'io.typst:inventory-bukkit:2.3.0'
     compileOnly lombok('1.18.36')

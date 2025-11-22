@@ -39,7 +39,7 @@ allprojects {
                     pom {
                         name.set("${project.group}:${project.name}")
                         description.set("Pure view library for Minecraft.")
-                        url.set("https://github.com/typst-io/bukkit-view")
+                        url.set("https://github.com/typst-io/view")
                         licenses {
                             license {
                                 name.set("The GNU General Public License, Version 3.0")
@@ -54,9 +54,9 @@ allprojects {
                             }
                         }
                         scm {
-                            connection.set("scm:git:git://github.com/typst-io/bukkit-view.git")
-                            developerConnection.set("scm:git:ssh://github.com:typst-io/bukkit-view.git")
-                            url.set("https://github.com/typst-io/bukkit-view/tree/master")
+                            connection.set("scm:git:git://github.com/typst-io/view.git")
+                            developerConnection.set("scm:git:ssh://github.com:typst-io/view.git")
+                            url.set("https://github.com/typst-io/view/tree/master")
                         }
                     }
                 }

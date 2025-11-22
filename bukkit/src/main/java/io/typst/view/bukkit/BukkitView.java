@@ -2,6 +2,7 @@ package io.typst.view.bukkit;
 
 import io.typst.inventory.ItemStackOps;
 import io.typst.inventory.bukkit.BukkitInventoryAdapter;
+import io.typst.inventory.bukkit.BukkitItemStackOps;
 import io.typst.view.*;
 import io.typst.view.action.*;
 import org.bukkit.Bukkit;
@@ -80,6 +81,10 @@ public class BukkitView {
 
     public static void register(ItemStackOps<ItemStack> itemOps, Plugin plugin) {
         Bukkit.getPluginManager().registerEvents(viewListener(itemOps, plugin), plugin);
+    }
+
+    public static void register(Plugin plugin) {
+        register(BukkitItemStackOps.INSTANCE, plugin);
     }
 
     private static class BukkitViewListener implements Listener {
